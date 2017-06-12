@@ -1,0 +1,6 @@
+rootProject.name = 'roboslack'
+
+include 'roboslack-api'
+include 'roboslack-webhook-api'
+include 'roboslack-webhook'
+

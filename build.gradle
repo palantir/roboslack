@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            url  "http://palantir.bintray.com/releases"
+        }
+    }
+
+    dependencies {
+        classpath "org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}"
+        classpath "gradle.plugin.org.inferred:gradle-processors:${gradleProcessorsVersion}"
+        classpath "com.palantir.baseline:gradle-baseline-java:${baselineVersion}"
+        classpath "com.palantir.gradle.gitversion:gradle-git-version:${gitVersionVersion}"
+        classpath "gradle.plugin.com.palantir.configurationresolver:gradle-configuration-resolver-plugin:${configurationResolverVersion}"
+    }
+}
+
+// Palantir Baseline
+apply plugin: 'com.palantir.baseline-config'
+apply plugin: 'com.palantir.baseline-idea'
+dependencies {
+    baseline "com.palantir.baseline:gradle-baseline-java-config:${baselineVersion}@zip"
+}
+
+apply plugin: 'com.palantir.git-version'
+
+allprojects {
+    group 'com.palantir.roboslack'
+    version gitVersion()
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            url  "http://palantir.bintray.com/releases"
+        }
+    }
+
+    // Ignore warnings on generated code
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += ['-XepDisableWarningsInGeneratedCode']
+    }
+}

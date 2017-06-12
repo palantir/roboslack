@@ -1,0 +1,38 @@
+/*
+ * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply from: "${rootDir}/gradle/java.gradle"
+apply from: "${rootDir}/gradle/junit.gradle"
+apply from: "${rootDir}/gradle/immutables.gradle"
+
+dependencies {
+    compile project(':roboslack-webhook-api')
+
+    compile "com.google.guava:guava:${guavaVersion}"
+
+    // Retrofit for REST client specs
+    compile "com.palantir.remoting2:retrofit2-clients:${httpRemotingVersion}"
+
+    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+}
+
+// Inject gradle property to JVM system property for tests
+test {
+    systemProperty 'ROBOSLACK_TOKEN_TPART', System.getProperty('ROBOSLACK_TOKEN_TPART')
+    systemProperty 'ROBOSLACK_TOKEN_BPART', System.getProperty('ROBOSLACK_TOKEN_BPART')
+    systemProperty 'ROBOSLACK_TOKEN_XPART', System.getProperty('ROBOSLACK_TOKEN_XPART')
+}
