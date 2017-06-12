@@ -1,0 +1,15 @@
+apply plugin: 'java'
+sourceCompatibility = '1.8'
+
+apply plugin: 'com.palantir.baseline-checkstyle'
+apply plugin: 'com.palantir.baseline-eclipse'
+apply plugin: 'com.palantir.baseline-error-prone'
+apply plugin: 'com.palantir.baseline-idea'
+apply plugin: 'com.palantir.configuration-resolver'
+apply plugin: 'org.inferred.processors'  // installs the "processor" configuration needed for baseline-error-prone
+
+
+clean {
+    delete "generated_src"
+    delete "generated_testSrc"
+}
