@@ -21,14 +21,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import com.palantir.remoting2.ext.jackson.ObjectMappers;
 import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
 
 public final class ResourcesDeserializer {
 
-    private static final ObjectMapper MAPPER = ObjectMappers.newClientObjectMapper();
+    private static final ObjectMapper MAPPER = ObjectMappers.newObjectMapper();
 
     private ResourcesDeserializer() {}
 

@@ -20,7 +20,11 @@ apply from: "${rootDir}/gradle/immutables.gradle"
 
 dependencies {
     compile "com.google.guava:guava:${guavaVersion}"
-    compile "com.palantir.remoting2:jackson-support:${httpRemotingVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compile "com.fasterxml.jackson.module:jackson-module-afterburner:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
