@@ -29,8 +29,17 @@ Auxiliary libraries:
 Setup
 -----
 
-// TODO: Fill out maven coordinate publication information
+Artifacts are published to JCenter, the following is an example gradle dependency configuration:
 
+```
+repositories {
+  jcenter()
+}
+
+dependencies {
+    compile "com.palantir.roboslack:roboslack-webhook:${version}"
+}
+```
 
 roboslack-webhook
 -----------------
