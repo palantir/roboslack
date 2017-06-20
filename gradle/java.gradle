@@ -13,3 +13,7 @@ clean {
     delete "generated_src"
     delete "generated_testSrc"
 }
+
+if (System.env.CIRCLE_TEST_REPORTS) {
+    test.reports.junitXml.destination = new File(System.env.CIRCLE_TEST_REPORTS, it.getName())
+}
