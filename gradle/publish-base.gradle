@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java.gradle"
-apply from: "${rootDir}/gradle/junit.gradle"
-apply from: "${rootDir}/gradle/immutables.gradle"
-apply from: "${rootDir}/gradle/publish.gradle"
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'nebula.maven-base-publish'
+apply plugin: 'nebula.maven-resolved-dependencies'
+apply plugin: 'nebula.javadoc-jar'
+apply plugin: 'nebula.source-jar'
 
-dependencies {
-    compile project(":roboslack-api")
-    compile "com.google.guava:guava:${guavaVersion}"
-
-    // Jax-rs annotations + Retrofit for REST client specs
-    compile "javax.ws.rs:javax.ws.rs-api:${jaxRsVersion}"
-    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
-
-    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+bintray {
+    user = System.env.BINTRAY_USERNAME
+    key = System.env.BINTRAY_PASSWORD
+    publish = true
+    pkg {
+        repo = 'releases'
+        name = 'roboslack'
+        userOrg = 'palantir'
+        licenses = ['Apache-2.0']
+        publications = ['nebula']
+    }
 }
+
+bintrayUpload.dependsOn { generatePomFileForNebulaPublication }
+bintrayUpload.dependsOn { sourceJar }
+bintrayUpload.dependsOn { build }

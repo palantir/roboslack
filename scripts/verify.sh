@@ -16,10 +16,6 @@ declare -a env_arr=(
 # Validate all environment vars
 for env_var_name in "${env_arr[@]}"; do
     env_var_value="${!env_var_name}"
-    if [[ -z "${env_var_value}" ]]; then
-        echo "${env_var_name} is unset"
-        exit 1
-    fi
 done
 
 # Build gradle cli parameters string

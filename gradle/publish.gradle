@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java.gradle"
-apply from: "${rootDir}/gradle/junit.gradle"
-apply from: "${rootDir}/gradle/immutables.gradle"
-apply from: "${rootDir}/gradle/publish.gradle"
+apply from: "${rootDir}/gradle/publish-base.gradle"
 
-dependencies {
-    compile project(":roboslack-api")
-    compile "com.google.guava:guava:${guavaVersion}"
-
-    // Jax-rs annotations + Retrofit for REST client specs
-    compile "javax.ws.rs:javax.ws.rs-api:${jaxRsVersion}"
-    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
-
-    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+        }
+    }
 }

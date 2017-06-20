@@ -1,5 +1,6 @@
 RoboSlack
 =========
+[![CircleCI](https://circleci.com/gh/palantir/roboslack/tree/master.svg?style=shield)](https://circleci.com/gh/palantir/roboslack/tree/master)
 
 RoboSlack is a Java 8 API which handles all aspects of authenticating and sending messages to Slack as an incoming webhook
  service. RoboSlack features a fully-articulated Java API that allows consumers to easily create rich Slack messages 
