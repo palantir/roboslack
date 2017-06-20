@@ -46,9 +46,4 @@ subprojects {
             url  "http://palantir.bintray.com/releases"
         }
     }
-
-    // Ignore warnings on generated code
-    tasks.withType(JavaCompile) {
-        options.compilerArgs += ['-XepDisableWarningsInGeneratedCode']
-    }
 }
