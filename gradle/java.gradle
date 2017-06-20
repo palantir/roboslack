@@ -14,3 +14,15 @@ clean {
     delete "generated_testSrc"
 }
 
+// Suppress Javadoc doclint warnings in Java 8+
+tasks.withType(Javadoc) {
+    if (!System.getProperty("java.version").startsWith("1.7")) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+tasks.check.dependsOn(javadoc)
+
+// Ignore warnings on generated code
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-XepDisableWarningsInGeneratedCode']
+}
