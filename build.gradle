@@ -32,7 +32,15 @@ apply plugin: 'com.palantir.git-version'
 
 allprojects {
     group 'com.palantir.roboslack'
-    version gitVersion()
+    version System.env.CIRCLE_TAG ?: gitVersion()
+}
+
+subprojects {
+
+    // Ignore warnings on generated code
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += ['-XepDisableWarningsInGeneratedCode']
+    }
 
     repositories {
         jcenter()
@@ -45,8 +53,7 @@ allprojects {
         }
     }
 
-    // Ignore warnings on generated code
-    tasks.withType(JavaCompile) {
-        options.compilerArgs += ['-XepDisableWarningsInGeneratedCode']
+    if (System.env.CIRCLE_TEST_REPORTS) {
+        test.reports.junitXml.destination = new File(System.env.CIRCLE_TEST_REPORTS, it.getName())
     }
 }
