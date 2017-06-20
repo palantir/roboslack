@@ -1,6 +1,7 @@
 RoboSlack
 =========
-[![CircleCI](https://circleci.com/gh/palantir/roboslack/tree/master.svg?style=shield)](https://circleci.com/gh/palantir/roboslack/tree/master)  [ ![Download](https://api.bintray.com/packages/palantir/releases/roboslack/images/download.svg) ](https://bintray.com/palantir/releases/roboslack/_latestVersion)
+[![CircleCI](https://circleci.com/gh/palantir/roboslack/tree/master.svg?style=shield)](https://circleci.com/gh/palantir/roboslack/tree/master)
+[![Download](https://api.bintray.com/packages/palantir/releases/roboslack/images/download.svg)](https://bintray.com/palantir/releases/roboslack/_latestVersion)
 
 
 RoboSlack is a Java 8 API which handles all aspects of authenticating and sending messages to Slack as an incoming webhook
