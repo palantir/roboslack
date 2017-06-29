@@ -2,12 +2,12 @@
   "fields": [
     {
       "title": "Field1Title",
-      "text": "Field1Text",
+      "value": "Field1Text",
       "short": true
     },
     {
       "title": "Field2Title",
-      "text": "Field2Text",
+      "value": "Field2Text",
       "short": true
     }
   ],
