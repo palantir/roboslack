@@ -34,7 +34,7 @@ import org.immutables.value.Value;
 public abstract class Field {
 
     private static final String TITLE_FIELD = "title";
-    private static final String VALUE_FIELD = "text";
+    private static final String VALUE_FIELD = "value";
     private static final String SHORT_FIELD = "short";
 
     public static Builder builder() {
