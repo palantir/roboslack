@@ -90,7 +90,7 @@ public abstract class MessageRequest {
     @Value.Default
     @JsonProperty(UNFURL_MEDIA_FIELD)
     public boolean unfurlMedia() {
-        return true;
+        return false;
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class MessageRequest {
     @Value.Default
     @JsonProperty(UNFURL_LINKS_FIELD)
     public boolean unfurlLinks() {
-        return true;
+        return false;
     }
 
     /**
@@ -126,7 +126,7 @@ public abstract class MessageRequest {
      */
     @Value.Default
     public ParseMode parse() {
-        return ParseMode.FULL;
+        return ParseMode.NONE;
     }
 
     /**
