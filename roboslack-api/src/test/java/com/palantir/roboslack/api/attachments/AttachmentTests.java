@@ -23,13 +23,15 @@ import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.palantir.roboslack.api.attachments.components.AuthorTests;
 import com.palantir.roboslack.api.attachments.components.ColorTests;
 import com.palantir.roboslack.api.attachments.components.FieldTests;
 import com.palantir.roboslack.api.attachments.components.FooterTests;
 import com.palantir.roboslack.api.attachments.components.TitleTests;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -42,9 +44,11 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
-class AttachmentTests {
+public final class AttachmentTests {
 
-    private static void assertValid(Attachment attachment) {
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments";
+
+    public static void assertValid(Attachment attachment) {
         attachment.fields().forEach(FieldTests::assertValid);
         assertFalse(Strings.isNullOrEmpty(attachment.fallback()));
         Optional.ofNullable(attachment.color()).ifPresent(ColorTests::assertValid);
@@ -86,20 +90,20 @@ class AttachmentTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedAttachmentsProvider.class)
-    void testDeserialization(Attachment attachment) {
-        assertValid(attachment);
+    void testDeserialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Attachment.class,
+                AttachmentTests::assertValid);
     }
 
     static class SerializedAttachmentsProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments";
-
         @Override
         public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Attachment.class, RESOURCES_DIRECTORY)
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
                     .map(ObjectArrayArguments::create);
         }
-    }
 
+    }
 
 }

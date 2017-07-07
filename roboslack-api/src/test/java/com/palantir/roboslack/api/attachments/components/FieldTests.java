@@ -22,8 +22,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.extension.ContainerExtensionContext;
 import org.junit.jupiter.api.function.Executable;
@@ -35,6 +37,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class FieldTests {
+
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/fields";
 
     public static void assertValid(Field field) {
         assertFalse(Strings.isNullOrEmpty(field.title()));
@@ -53,8 +57,10 @@ public final class FieldTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedFieldsProvider.class)
-    void testDeserialization(Field field) {
-        assertValid(field);
+    void testSerialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Field.class,
+                FieldTests::assertValid);
     }
 
     @ParameterizedTest
@@ -66,12 +72,9 @@ public final class FieldTests {
 
     static class SerializedFieldsProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/fields";
-
         @Override
         public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Field.class, RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(ObjectArrayArguments::create);
         }
     }
 

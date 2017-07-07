@@ -25,11 +25,13 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
-final class ObjectMappers {
+public final class ObjectMappers {
+
+    public static final ObjectMapper DEFAULT = newObjectMapper();
 
     private ObjectMappers() {}
 
-    static ObjectMapper newObjectMapper() {
+    private static ObjectMapper newObjectMapper() {
         return new ObjectMapper().registerModule(new GuavaModule())
                 .registerModule(new Jdk8Module().configureAbsentsAsNulls(true))
                 .registerModule(new AfterburnerModule())

@@ -21,8 +21,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class FooterTests {
+
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/footers";
 
     @SuppressWarnings("unused") // Called from reflection
     static Stream<Executable> invalidMarkdownConstructors() {
@@ -77,17 +81,17 @@ public final class FooterTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedFootersProvider.class)
-    void testDeserialization(Footer footer) {
-        assertValid(footer);
+    void testDeserialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Footer.class,
+                FooterTests::assertValid);
     }
 
     static class SerializedFootersProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/footers";
-
         @Override
         public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Footer.class, RESOURCES_DIRECTORY)
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
                     .map(ObjectArrayArguments::create);
         }
 
