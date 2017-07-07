@@ -18,11 +18,14 @@ package com.palantir.roboslack.api.attachments.components;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.base.Joiner;
 import com.palantir.roboslack.utils.MorePreconditions;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
@@ -36,12 +39,11 @@ import org.immutables.value.Value;
  * @since 0.1.0
  */
 @Value.Immutable
-@JsonSerialize(as = ImmutableColor.class)
+@Value.Style(jacksonIntegration = false)
+@JsonDeserialize(using = Color.Deserializer.class)
 public abstract class Color {
 
-    private static final String VALUE_FIELD = "color";
-
-    protected static Builder builder() {
+    private static Builder builder() {
         return ImmutableColor.builder();
     }
 
@@ -50,7 +52,7 @@ public abstract class Color {
     }
 
     @JsonCreator
-    public static Color of(@JsonProperty(VALUE_FIELD) String value) {
+    public static Color of(String value) {
         return builder().value(value).build();
     }
 
@@ -108,6 +110,11 @@ public abstract class Color {
         return Preset.of(value()).get();
     }
 
+    @Override
+    public final String toString() {
+        return value();
+    }
+
     @JsonIgnoreType
     public enum Preset {
         /**
@@ -150,6 +157,15 @@ public abstract class Color {
         Color build();
     }
 
+    static class Deserializer extends JsonDeserializer<Color> {
+
+        @Override
+        public Color deserialize(JsonParser parser, DeserializationContext ctxt)
+                throws IOException {
+            return Color.of(parser.getValueAsString());
+        }
+    }
+
     /**
      * Represents either a hex color value in the form of {@code #XXXXXX} or any defined {@link Preset#toString()}.
      *
@@ -157,10 +173,5 @@ public abstract class Color {
      */
     @JsonValue
     public abstract String value();
-
-    @Override
-    public final String toString() {
-        return value();
-    }
 
 }

@@ -21,8 +21,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ContainerExtensionContext;
@@ -35,6 +37,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class AuthorTests {
+
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/authors";
 
     public static void assertValid(Author author) {
         assertFalse(Strings.isNullOrEmpty(author.name()));
@@ -59,17 +63,17 @@ public final class AuthorTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedAuthorsProvider.class)
-    void testDeserialization(Author author) {
-        assertValid(author);
+    void testSerialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Author.class,
+                AuthorTests::assertValid);
     }
 
     static class SerializedAuthorsProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/authors";
-
         @Override
         public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Author.class, RESOURCES_DIRECTORY)
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
                     .map(ObjectArrayArguments::create);
         }
 
