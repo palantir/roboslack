@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.roboslack.api.testing;
+package com.palantir.roboslack.jackson;
 
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -27,11 +27,9 @@ import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 public final class ObjectMappers {
 
-    public static final ObjectMapper DEFAULT = newObjectMapper();
-
     private ObjectMappers() {}
 
-    private static ObjectMapper newObjectMapper() {
+    public static ObjectMapper newObjectMapper() {
         return new ObjectMapper().registerModule(new GuavaModule())
                 .registerModule(new Jdk8Module().configureAbsentsAsNulls(true))
                 .registerModule(new AfterburnerModule())

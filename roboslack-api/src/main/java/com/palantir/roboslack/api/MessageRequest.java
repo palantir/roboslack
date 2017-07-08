@@ -192,6 +192,7 @@ public abstract class MessageRequest {
         Builder iconUrl(URL iconUrl);
         Builder username(String username);
         Builder channel(String channel);
+        Builder from(MessageRequest messageRequest);
         MessageRequest build();
     }
 

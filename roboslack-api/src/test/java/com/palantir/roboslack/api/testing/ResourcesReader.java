@@ -20,15 +20,19 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import com.palantir.roboslack.jackson.ObjectMappers;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 public final class ResourcesReader {
+
+    private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newObjectMapper();
 
     private ResourcesReader() {}
 
@@ -51,7 +55,7 @@ public final class ResourcesReader {
 
     private static JsonNode readJson(File file) {
         try {
-            return ObjectMappers.DEFAULT.readTree(readString(file));
+            return OBJECT_MAPPER.readTree(readString(file));
         } catch (IOException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         }

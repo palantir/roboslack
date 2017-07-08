@@ -20,20 +20,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.palantir.roboslack.jackson.ObjectMappers;
 import java.io.IOException;
 import java.util.function.Consumer;
 
 public final class MoreAssertions {
+
+    private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newObjectMapper();
 
     private MoreAssertions() {}
 
     public static <T> void assertSerializable(JsonNode serialized, Class<T> clazz, Consumer<T> assertion) {
         try {
             // First try deserializing
-            T instance = ObjectMappers.DEFAULT.readValue(ObjectMappers.DEFAULT.writeValueAsString(serialized), clazz);
+            T instance = OBJECT_MAPPER.readValue(OBJECT_MAPPER.writeValueAsString(serialized), clazz);
             assertion.accept(instance);
             // Then reserializing and comparing
-            String reserialized = ObjectMappers.DEFAULT.writeValueAsString(instance);
+            String reserialized = OBJECT_MAPPER.writeValueAsString(instance);
             assertEquals(serialized.toString(), reserialized,
                     String.format("Serialized input '%s' does not match reserialized string: '%s'",
                             serialized.toString(), reserialized));
