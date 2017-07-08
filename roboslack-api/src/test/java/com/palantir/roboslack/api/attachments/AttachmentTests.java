@@ -99,8 +99,7 @@ public final class AttachmentTests {
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
-                    .map(Arguments::of);
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
 
     }
