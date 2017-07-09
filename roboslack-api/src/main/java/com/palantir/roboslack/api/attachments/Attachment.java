@@ -29,8 +29,10 @@ import com.palantir.roboslack.api.attachments.components.Color;
 import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
+import com.palantir.roboslack.api.markdown.MrkdwnIn;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -54,6 +56,7 @@ public abstract class Attachment {
     private static final String PRETEXT_FIELD = "pretext";
     private static final String IMAGE_URL_FIELD = "image_url";
     private static final String THUMB_URL_FIELD = "thumb_url";
+    private static final String MRKDWN_IN_FIELD = "mrkdwn_in";
 
     /**
      * Generate a new {@link Attachment.Builder}.
@@ -68,34 +71,17 @@ public abstract class Attachment {
     protected final void check() {
         checkArgument(!Strings.isNullOrEmpty(fallback()), "Attachment fallback message cannot be null or empty");
         MorePreconditions.checkDoesNotContainMarkdown(FALLBACK_FIELD, fallback());
-        pretext().ifPresent(s -> MorePreconditions.checkDoesNotContainMarkdown(PRETEXT_FIELD, s));
     }
 
     /**
      * The {@link List} get {@link Field}s for this {@link Attachment}. Fields are displayed in a tabular fashion near
-     * the bottom get the {@link Attachment}.
+     * the bottom of the {@link Attachment}.
      *
      * @return the {@link List} get {@link Field}s
      */
     @Value.Default
     public List<Field> fields() {
         return ImmutableList.of();
-    }
-
-    public interface Builder {
-        Builder fallback(String fallback);
-        Builder color(Color color);
-        Builder pretext(String pretext);
-        Builder author(Author author);
-        Builder title(Title title);
-        Builder text(String text);
-        Builder addFields(Field field);
-        Builder addFields(Field... fields);
-        Builder fields(Iterable<? extends Field> elements);
-        Builder imageUrl(URL imageUrl);
-        Builder thumbUrl(URL thumbUrl);
-        Builder footer(Footer footer);
-        Attachment build();
     }
 
     /**
@@ -199,6 +185,68 @@ public abstract class Attachment {
     @JsonUnwrapped
     public Footer footer() {
         return null;
+    }
+
+    /**
+     * A special list of flags that tells Slack where to expect Markdown in an Attachment.
+     * Valid values are ["pretext", "text", "fields"].
+     *
+     * @return the {@code mrkdwn_in} list
+     */
+    @Value.Derived
+    @JsonProperty(MRKDWN_IN_FIELD)
+    public Iterable<? extends String> mrkdwnIn() {
+        // inspect the values of the Attachment object and create the mrkdwnIn list.
+
+        List<String> mrkdwnIns = new ArrayList<>();
+
+        // check if the pretext contains Markdown.
+        if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
+            mrkdwnIns.add(MrkdwnIn.PRETEXT.value());
+        }
+
+        // check if the text contains Markdown.
+        if (text().isPresent() && MorePreconditions.containsMarkdown(text().get())) {
+            mrkdwnIns.add(MrkdwnIn.TEXT.value());
+        }
+
+        // check if any of the Fields' values contain Markdown.
+        for (Field field : fields()) {
+            if (MorePreconditions.containsMarkdown(field.value())) {
+                mrkdwnIns.add(MrkdwnIn.FIELDS.value());
+                break;
+            }
+        }
+
+        return ImmutableList.copyOf(mrkdwnIns);
+    }
+
+    public interface Builder {
+        Builder fallback(String fallback);
+
+        Builder color(Color color);
+
+        Builder pretext(String pretext);
+
+        Builder author(Author author);
+
+        Builder title(Title title);
+
+        Builder text(String text);
+
+        Builder addFields(Field field);
+
+        Builder addFields(Field... fields);
+
+        Builder fields(Iterable<? extends Field> elements);
+
+        Builder imageUrl(URL imageUrl);
+
+        Builder thumbUrl(URL thumbUrl);
+
+        Builder footer(Footer footer);
+
+        Attachment build();
     }
 
 }

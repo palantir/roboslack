@@ -75,12 +75,12 @@ public final class MorePreconditions {
     /**
      * Returns true if the parameter {@link String} contains any symbols that Slack would process as markdown.
      * Bold, italic, strikethrough, and emojis are tested for in pairs - e.g. one asterisk will not return true, but
-     * two will.
+     * a pair will.
      *
      * @param text {@link String} for Slack markdown
      * @return {@link boolean} telling us if Slack markdown was found
      */
-    private static boolean containsMarkdown(@CheckForNull String text) {
+    public static boolean containsMarkdown(@CheckForNull String text) {
         return text != null && SlackMarkdown.PATTERN.matcher(text).find();
     }
 

@@ -42,7 +42,7 @@ public final class SlackMarkdown {
      */
     public static final String BOLD_DECORATION = "*";
     public static final String ITALIC_DECORATION = "_";
-    public static final String STRIKE_DECORATION = "-";
+    public static final String STRIKE_DECORATION = "~";
     public static final String EMOJI_DECORATION = ":";
     public static final String PREFORMAT_DECORATION = "`";
     public static final String PREFORMAT_MULTILINE_DECORATION = "```";

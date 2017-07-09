@@ -45,7 +45,6 @@ public final class FieldTests {
     static Stream<Executable> invalidMarkdownConstructors() {
         return Stream.of(
                 () -> Field.of("*title with bold*", "Valid"),
-                () -> Field.of("Valid", "-strike through text-"),
                 () -> Field.builder().title("_Sad Times_")
                         .value("Hello *failing* test! :smile:").build()
         );
