@@ -16,6 +16,8 @@
 
 package com.palantir.roboslack.api.markdown;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.util.Arrays;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
@@ -25,6 +27,7 @@ import javax.annotation.CheckForNull;
  *
  * @since v0.2.2
  */
+@JsonSerialize(using = ToStringSerializer.class)
 public enum MarkdownIn {
     /**
      * Pretext.

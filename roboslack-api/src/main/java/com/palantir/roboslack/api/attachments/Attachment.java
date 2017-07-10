@@ -195,19 +195,19 @@ public abstract class Attachment {
      */
     @Value.Derived
     @JsonProperty(MRKDWN_IN_FIELD)
-    public Collection<String> markdownInputs() {
+    public Collection<MarkdownIn> markdownInputs() {
         // inspect the values of the Attachment object and create the mrkdwnIn list.
 
-        ImmutableList.Builder<String> markdownInputs = ImmutableList.builder();
+        ImmutableList.Builder<MarkdownIn> markdownInputs = ImmutableList.builder();
 
         // check if the pretext contains Markdown.
         if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
-            markdownInputs.add(MarkdownIn.PRETEXT.value());
+            markdownInputs.add(MarkdownIn.PRETEXT);
         }
 
         // check if the text contains Markdown.
         if (text().isPresent() && MorePreconditions.containsMarkdown(text().get())) {
-            markdownInputs.add(MarkdownIn.TEXT.value());
+            markdownInputs.add(MarkdownIn.TEXT);
         }
 
         // check if any of the Fields' values contain Markdown.
@@ -215,7 +215,7 @@ public abstract class Attachment {
                 .map(Field::value)
                 .filter(MorePreconditions::containsMarkdown)
                 .findFirst()
-                .ifPresent(ignored -> markdownInputs.add(MarkdownIn.FIELDS.value()));
+                .ifPresent(ignored -> markdownInputs.add(MarkdownIn.FIELDS));
 
         return markdownInputs.build();
     }
