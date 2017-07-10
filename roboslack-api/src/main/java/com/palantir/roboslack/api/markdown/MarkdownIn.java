@@ -25,39 +25,35 @@ import javax.annotation.CheckForNull;
  *
  * @since v0.2.2
  */
-public enum MrkdwnIn {
+public enum MarkdownIn {
     /**
      * Pretext.
      */
-    PRETEXT("pretext"),
+    PRETEXT,
     /**
      * Text.
      */
-    TEXT("text"),
+    TEXT,
     /**
      * Fields.
      */
-    FIELDS("fields");
+    FIELDS;
 
-
-    private final String value;
-
-    MrkdwnIn(String value) {
-        this.value = value;
+    MarkdownIn() {
     }
 
-    public static Optional<MrkdwnIn> of(@CheckForNull String value) {
-        return Arrays.stream(MrkdwnIn.values())
+    public static Optional<MarkdownIn> of(@CheckForNull String value) {
+        return Arrays.stream(MarkdownIn.values())
                 .filter(preset -> preset.toString().equalsIgnoreCase(value))
                 .findFirst();
     }
 
-    @Override
-    public String toString() {
-        return value;
+    public String value() {
+        return this.toString();
     }
 
-    public String value() {
-        return value;
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
 }

@@ -29,10 +29,10 @@ import com.palantir.roboslack.api.attachments.components.Color;
 import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
-import com.palantir.roboslack.api.markdown.MrkdwnIn;
+import com.palantir.roboslack.api.markdown.MarkdownIn;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -195,30 +195,29 @@ public abstract class Attachment {
      */
     @Value.Derived
     @JsonProperty(MRKDWN_IN_FIELD)
-    public Iterable<? extends String> mrkdwnIn() {
+    public Collection<String> markdownInputs() {
         // inspect the values of the Attachment object and create the mrkdwnIn list.
 
-        List<String> mrkdwnIns = new ArrayList<>();
+        ImmutableList.Builder<String> markdownInputs = ImmutableList.builder();
 
         // check if the pretext contains Markdown.
         if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
-            mrkdwnIns.add(MrkdwnIn.PRETEXT.value());
+            markdownInputs.add(MarkdownIn.PRETEXT.value());
         }
 
         // check if the text contains Markdown.
         if (text().isPresent() && MorePreconditions.containsMarkdown(text().get())) {
-            mrkdwnIns.add(MrkdwnIn.TEXT.value());
+            markdownInputs.add(MarkdownIn.TEXT.value());
         }
 
         // check if any of the Fields' values contain Markdown.
-        for (Field field : fields()) {
-            if (MorePreconditions.containsMarkdown(field.value())) {
-                mrkdwnIns.add(MrkdwnIn.FIELDS.value());
-                break;
-            }
-        }
+        fields().stream()
+                .map(Field::value)
+                .filter(MorePreconditions::containsMarkdown)
+                .findFirst()
+                .ifPresent(ignored -> markdownInputs.add(MarkdownIn.FIELDS.value()));
 
-        return ImmutableList.copyOf(mrkdwnIns);
+        return markdownInputs.build();
     }
 
     public interface Builder {
