@@ -107,6 +107,45 @@ class SlackWebHookServiceTests {
                 .text("The simplest message")
                 .build();
 
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_PRETEXT = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown pretext in Attachment")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .pretext(SlackMarkdown.BOLD.decorate("bold markdown"))
+                        .text("some attachment text")
+                        .build())
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown text in Attachment")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .text(SlackMarkdown.EMOJI.decorate("boom"))
+                        .build())
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown in Attachment Field values")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .text("some attachment text")
+                        .addFields(Field.builder()
+                                        .title("strike field")
+                                        .value(SlackMarkdown.STRIKE.decorate("strike text"))
+                                        .build(),
+                                Field.builder()
+                                        .title("markdown field")
+                                        .value(SlackMarkdown.PREFORMAT.decorate("some code"))
+                                        .build())
+                        .build())
+                .build();
+
         private static final MessageRequest MESSAGE_WITH_ATTACHMENT_FOOTER = MessageRequest.builder()
                 .username("robo-slack")
                 .iconEmoji("smile")
@@ -191,6 +230,9 @@ class SlackWebHookServiceTests {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
             return Stream.of(
                     MESSAGE_SIMPLE,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_PRETEXT,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS,
                     MESSAGE_WITH_ATTACHMENT_FOOTER,
                     MESSAGE_WITH_ATTACHMENTS,
                     MESSAGE_COMPLEX

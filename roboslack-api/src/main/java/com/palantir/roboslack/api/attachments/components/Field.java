@@ -60,7 +60,6 @@ public abstract class Field {
     @Value.Check
     protected final void check() {
         MorePreconditions.checkDoesNotContainMarkdown(TITLE_FIELD, title());
-        MorePreconditions.checkDoesNotContainMarkdown(VALUE_FIELD, value());
     }
 
     public interface Builder {

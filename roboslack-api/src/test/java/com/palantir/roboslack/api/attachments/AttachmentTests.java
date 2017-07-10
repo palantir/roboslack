@@ -64,7 +64,6 @@ public final class AttachmentTests {
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
                 () -> Attachment.builder().fallback("").build(),
-                () -> Attachment.builder().fallback("text").pretext("*mark* -down-").build(),
                 () -> Attachment.builder().fallback("_markdown_").build()
         );
     }
