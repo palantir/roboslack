@@ -29,7 +29,7 @@ import com.palantir.roboslack.api.attachments.components.Color;
 import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
-import com.palantir.roboslack.api.markdown.MarkdownIn;
+import com.palantir.roboslack.api.markdown.MarkdownInput;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public abstract class Attachment {
     private static final String PRETEXT_FIELD = "pretext";
     private static final String IMAGE_URL_FIELD = "image_url";
     private static final String THUMB_URL_FIELD = "thumb_url";
-    private static final String MRKDWN_IN_FIELD = "mrkdwn_in";
+    private static final String MARKDOWN_INPUTS_FIELD = "mrkdwn_in";
 
     /**
      * Generate a new {@link Attachment.Builder}.
@@ -191,32 +191,27 @@ public abstract class Attachment {
      * A special list of flags that tells Slack where to expect Markdown in an Attachment.
      * Valid values are ["pretext", "text", "fields"].
      *
-     * @return the {@code mrkdwn_in} list
+     * @return the {@link Collection} of {@code markdownInputs}
      */
     @Value.Derived
-    @JsonProperty(MRKDWN_IN_FIELD)
-    public Collection<MarkdownIn> markdownInputs() {
+    @JsonProperty(MARKDOWN_INPUTS_FIELD)
+    public Collection<MarkdownInput> markdownInputs() {
         // inspect the values of the Attachment object and create the mrkdwnIn list.
-
-        ImmutableList.Builder<MarkdownIn> markdownInputs = ImmutableList.builder();
-
+        ImmutableList.Builder<MarkdownInput> markdownInputs = ImmutableList.builder();
         // check if the pretext contains Markdown.
         if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
-            markdownInputs.add(MarkdownIn.PRETEXT);
+            markdownInputs.add(MarkdownInput.PRETEXT);
         }
-
         // check if the text contains Markdown.
         if (text().isPresent() && MorePreconditions.containsMarkdown(text().get())) {
-            markdownInputs.add(MarkdownIn.TEXT);
+            markdownInputs.add(MarkdownInput.TEXT);
         }
-
         // check if any of the Fields' values contain Markdown.
         fields().stream()
                 .map(Field::value)
                 .filter(MorePreconditions::containsMarkdown)
                 .findFirst()
-                .ifPresent(ignored -> markdownInputs.add(MarkdownIn.FIELDS));
-
+                .ifPresent(ignored -> markdownInputs.add(MarkdownInput.FIELDS));
         return markdownInputs.build();
     }
 

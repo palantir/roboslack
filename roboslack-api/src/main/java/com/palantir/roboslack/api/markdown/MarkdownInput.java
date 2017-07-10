@@ -16,10 +16,10 @@
 
 package com.palantir.roboslack.api.markdown;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.util.Arrays;
-import java.util.Optional;
 import javax.annotation.CheckForNull;
 
 /**
@@ -28,7 +28,7 @@ import javax.annotation.CheckForNull;
  * @since v0.2.2
  */
 @JsonSerialize(using = ToStringSerializer.class)
-public enum MarkdownIn {
+public enum MarkdownInput {
     /**
      * Pretext.
      */
@@ -42,13 +42,14 @@ public enum MarkdownIn {
      */
     FIELDS;
 
-    MarkdownIn() {
-    }
+    private static final String NOT_FOUND_ERR = "No Markdown Input value matching: %s";
 
-    public static Optional<MarkdownIn> of(@CheckForNull String value) {
-        return Arrays.stream(MarkdownIn.values())
+    @JsonCreator
+    public static MarkdownInput of(@CheckForNull String value) {
+        return Arrays.stream(MarkdownInput.values())
                 .filter(preset -> preset.toString().equalsIgnoreCase(value))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND_ERR, value)));
     }
 
     public String value() {
