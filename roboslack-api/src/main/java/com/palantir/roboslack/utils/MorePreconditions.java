@@ -20,10 +20,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Range;
 import com.palantir.roboslack.api.markdown.SlackMarkdown;
+import com.palantir.roboslack.api.time.FormatToken;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 
 /**
@@ -60,6 +63,7 @@ public final class MorePreconditions {
 
     /**
      * Ensures that at least one field in {code fieldNames} is non-null/empty -- e.g., it is valid.
+     *
      * @param fieldNames {@code Collection<String>} field names to check
      * @param optionals {@code }
      */
@@ -82,6 +86,20 @@ public final class MorePreconditions {
      */
     public static boolean containsMarkdown(@CheckForNull String text) {
         return text != null && SlackMarkdown.PATTERN.matcher(text).find();
+    }
+
+    /**
+     * Returns true if the {@code text} contains a summed count of instances of {@link FormatToken} values, based on the
+     * sum count {@link Range<Integer>} {@code acceptanceRange}.
+     *
+     * @param text the text to count {@link FormatToken} instances on
+     * @param acceptanceRange the range threshold
+     * @return true if contains accepted count of {@link FormatToken}, false otherwise
+     */
+    public static boolean containsDateTimeFormatTokens(@CheckForNull String text, Range<Integer> acceptanceRange) {
+        return acceptanceRange.contains(Stream.of(FormatToken.values())
+                .mapToInt(token -> text.contains(token.toString()) ? 1 : 0)
+                .sum());
     }
 
 }
