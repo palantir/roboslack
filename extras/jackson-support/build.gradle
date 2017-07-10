@@ -16,13 +16,11 @@
 
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/junit.gradle"
-apply from: "${rootDir}/gradle/immutables.gradle"
-apply from: "${rootDir}/gradle/publish.gradle"
 
 dependencies {
-    compile project(":extras:jackson-support")
-    compile "com.google.guava:guava:${guavaVersion}"
-
-    testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-    testCompile "org.mockito:mockito-core:${mockitoVersion}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compile "com.fasterxml.jackson.module:jackson-module-afterburner:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-guava:${jacksonVersion}"
 }

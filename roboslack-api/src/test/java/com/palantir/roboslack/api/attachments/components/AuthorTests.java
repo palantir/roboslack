@@ -27,14 +27,13 @@ import com.palantir.roboslack.api.testing.MoreAssertions;
 import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class AuthorTests {
 
@@ -55,7 +54,7 @@ public final class AuthorTests {
     }
 
     @ParameterizedTest
-    @MethodSource(names = "invalidMarkdownConstructors")
+    @MethodSource(value = "invalidMarkdownConstructors")
     void testDoesNotContainMarkdown(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(), containsString("cannot contain markdown"));
@@ -72,9 +71,8 @@ public final class AuthorTests {
     static class SerializedAuthorsProvider implements ArgumentsProvider {
 
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
 
     }

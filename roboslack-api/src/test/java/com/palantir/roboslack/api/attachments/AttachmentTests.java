@@ -35,14 +35,13 @@ import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class AttachmentTests {
 
@@ -81,7 +80,7 @@ public final class AttachmentTests {
     }
 
     @ParameterizedTest
-    @MethodSource(names = "invalidConstructors")
+    @MethodSource(value = "invalidConstructors")
     void testConstructionConstraints(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(), either(containsString("cannot be null or empty"))
@@ -99,9 +98,8 @@ public final class AttachmentTests {
     static class SerializedAttachmentsProvider implements ArgumentsProvider {
 
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesReader.readJson(RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
 
     }

@@ -20,6 +20,8 @@ package com.palantir.roboslack.webhook;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.google.common.collect.ImmutableList;
@@ -37,13 +39,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 class SlackWebHookServiceTests {
 
@@ -58,9 +67,36 @@ class SlackWebHookServiceTests {
 
     @ParameterizedTest
     @ArgumentsSource(MessageRequestProvider.class)
-    void testSendMessage(MessageRequest messageRequest) {
+    void testSendMessage(MessageRequest messageRequest, TestInfo testInfo) {
         assertThat(SlackWebHookService.with(assumingEnvironmentWebHookToken())
-                .sendMessage(messageRequest), is(equalTo(ResponseCode.OK)));
+                        .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
+                is(equalTo(ResponseCode.OK)));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(MessageRequestProvider.class)
+    void testSendMessageAsync(MessageRequest messageRequest, TestInfo testInfo) {
+        AtomicBoolean submitted = new AtomicBoolean(false);
+        SlackWebHookService.with(assumingEnvironmentWebHookToken())
+                .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo),
+                        new Callback<ResponseCode>() {
+                            @Override
+                            @ParametersAreNonnullByDefault
+                            public void onResponse(Call<ResponseCode> call, Response<ResponseCode> response) {
+                                submitted.set(true);
+                                assertTrue(call.isExecuted());
+                                assertThat(response.body(), is(equalTo(ResponseCode.OK)));
+                            }
+
+                            @Override
+                            @ParametersAreNonnullByDefault
+                            public void onFailure(Call<ResponseCode> call, Throwable throwable) {
+                                submitted.set(true);
+                                assertTrue(call.isExecuted());
+                                fail(throwable);
+                            }
+                        });
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilTrue(submitted);
     }
 
     static class MessageRequestProvider implements ArgumentsProvider {
@@ -152,15 +188,14 @@ class SlackWebHookServiceTests {
         }
 
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
             return Stream.of(
                     MESSAGE_SIMPLE,
                     MESSAGE_WITH_ATTACHMENT_FOOTER,
                     MESSAGE_WITH_ATTACHMENTS,
                     MESSAGE_COMPLEX
-            ).map(ObjectArrayArguments::create);
+            ).map(Arguments::of);
         }
-
     }
 
 }
