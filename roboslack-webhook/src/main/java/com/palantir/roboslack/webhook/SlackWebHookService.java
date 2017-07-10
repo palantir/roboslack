@@ -29,21 +29,28 @@ import retrofit2.Callback;
 
 /**
  * Main entry point class to interact with a {@link SlackWebHook}. Instantiate it with a {@link WebHookToken} and a
- * {@code userAgent} {@link String}, then sendCall your composed {@link MessageRequest}s via the {@link
- * SlackWebHookService#sendMessage(MessageRequest)} method. Ensure that you check the returned {@link ResponseCode} for
- * Slack status feedback.
+ * {@code userAgent} {@link String}, then send your composed {@link MessageRequest}s via the {@link
+ * SlackWebHookService#sendMessageAsync(MessageRequest)} method. Ensure that you check the returned {@link ResponseCode}
+ * for Slack status feedback.
  */
 public final class SlackWebHookService {
 
-    private static final String DEFAULT_USER_AGENT = "RoboSlack/1.0";
+    private static final String TOKEN_ERR = "WebHookToken must be valid and non-null.";
+
     private static final String DEFAULT_WEB_HOOK_URL = "https://hooks.slack.com/services/";
 
     private final WebHookToken token;
     private final SlackWebHook webHook;
 
     private SlackWebHookService(WebHookToken token, String userAgent) {
-        this.token = checkNotNull(token, "WebHookToken must be valid and non-null.");
+        this.token = checkNotNull(token, TOKEN_ERR);
         this.webHook = SlackClients.create(SlackWebHook.class, userAgent, DEFAULT_WEB_HOOK_URL,
+                ResponseCodeConverter.factory());
+    }
+
+    private SlackWebHookService(WebHookToken token) {
+        this.token = checkNotNull(token, TOKEN_ERR);
+        this.webHook = SlackClients.create(SlackWebHook.class, DEFAULT_WEB_HOOK_URL,
                 ResponseCodeConverter.factory());
     }
 
@@ -54,7 +61,7 @@ public final class SlackWebHookService {
      * @return the new {@link SlackWebHookService} interaction object
      */
     public static SlackWebHookService with(WebHookToken token) {
-        return new SlackWebHookService(token, DEFAULT_USER_AGENT);
+        return new SlackWebHookService(token);
     }
 
     /**
@@ -79,7 +86,7 @@ public final class SlackWebHookService {
      * @param messageRequest the {@link MessageRequest} to execute sending
      * @param callback the {@link Callback} to trigger on response
      */
-    public void sendMessage(MessageRequest messageRequest, Callback<ResponseCode> callback) {
+    public void sendMessageAsync(MessageRequest messageRequest, Callback<ResponseCode> callback) {
         sendCall(messageRequest).enqueue(callback);
     }
 
@@ -90,7 +97,7 @@ public final class SlackWebHookService {
      * @return the resulting {@link ResponseCode} from the operation
      * @throws IllegalStateException if unable to connect to Slack
      */
-    public ResponseCode sendMessage(MessageRequest messageRequest) {
+    public ResponseCode sendMessageAsync(MessageRequest messageRequest) {
         try {
             return sendCall(messageRequest).execute().body();
         } catch (IOException e) {

@@ -27,12 +27,16 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 /**
  * Utility class for generating service clients for RPC calls to Slack (intended for internal use only).
+ *
+ * @since 1.0.0
  */
 public final class SlackClients {
 
+    private static final String DEFAULT_USER_AGENT = "RoboSlack/1.0.0";
+
     private SlackClients() {}
 
-    private static String trailingSlash(String uri) {
+    private static String addTrailingSlash(String uri) {
         return uri.charAt(uri.length() - 1) == '/' ? uri : uri + "/";
     }
 
@@ -46,11 +50,15 @@ public final class SlackClients {
     public static <T> T create(Class<T> clazz, String userAgent, String uri,
             Converter.Factory... specialPurposeConverters) {
         Retrofit.Builder retrofit = new Retrofit.Builder()
-                .baseUrl(trailingSlash(uri))
+                .baseUrl(addTrailingSlash(uri))
                 .client(createOkHttpClient(userAgent));
         Stream.of(specialPurposeConverters).forEach(retrofit::addConverterFactory);
         retrofit.addConverterFactory(JacksonConverterFactory.create(ObjectMappers.newObjectMapper()));
         return retrofit.build().create(clazz);
+    }
+
+    public static <T> T create(Class<T> clazz, String uri, Converter.Factory... specialPurposeConverters) {
+        return create(clazz, DEFAULT_USER_AGENT, uri, specialPurposeConverters);
     }
 
 }

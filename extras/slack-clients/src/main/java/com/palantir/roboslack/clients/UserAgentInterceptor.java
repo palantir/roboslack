@@ -21,9 +21,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import okhttp3.Interceptor;
-import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * Intercepts requests, then injects and validates the user agent string.
+ *
+ * @since 1.0.0
+ */
 public final class UserAgentInterceptor implements Interceptor {
 
     private static final Pattern VALID_USER_AGENT = Pattern.compile("[A-Za-z0-9()\\-#;/.,_\\s]+");
@@ -41,11 +45,9 @@ public final class UserAgentInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
-        Request requestWithUserAgent = originalRequest.newBuilder()
+        return chain.proceed(chain.request().newBuilder()
                 .header("User-Agent", userAgent)
-                .build();
-        return chain.proceed(requestWithUserAgent);
+                .build());
     }
 
 }

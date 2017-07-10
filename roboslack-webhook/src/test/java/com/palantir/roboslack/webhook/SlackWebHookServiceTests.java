@@ -69,7 +69,7 @@ class SlackWebHookServiceTests {
     @ArgumentsSource(MessageRequestProvider.class)
     void testSendMessage(MessageRequest messageRequest, TestInfo testInfo) {
         assertThat(SlackWebHookService.with(assumingEnvironmentWebHookToken())
-                        .sendMessage(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
+                        .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
                 is(equalTo(ResponseCode.OK)));
     }
 
@@ -78,7 +78,7 @@ class SlackWebHookServiceTests {
     void testSendMessageAsync(MessageRequest messageRequest, TestInfo testInfo) {
         AtomicBoolean submitted = new AtomicBoolean(false);
         SlackWebHookService.with(assumingEnvironmentWebHookToken())
-                .sendMessage(EnrichTestMessageRequest.get().apply(messageRequest, testInfo),
+                .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo),
                         new Callback<ResponseCode>() {
                             @Override
                             @ParametersAreNonnullByDefault
