@@ -25,6 +25,7 @@ import com.google.common.collect.Range;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -64,7 +65,11 @@ public final class SlackDateTimeFormat {
     }
 
     public static SlackDateTimeFormat of(FormatToken first, FormatToken... tokens) {
-        return new SlackDateTimeFormat(Joiner.on(" ").join(first, tokens));
+        List<FormatToken> allTokens = ImmutableList.<FormatToken>builder()
+                .add(first)
+                .addAll(Arrays.asList(tokens))
+                .build();
+        return new SlackDateTimeFormat(Joiner.on(" ").join(allTokens));
     }
 
     private static List<String> tokenizePattern(String pattern) {

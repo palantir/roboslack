@@ -19,7 +19,8 @@ package com.palantir.roboslack.api.time;
 import com.palantir.roboslack.api.markdown.StringDecorator;
 import com.palantir.roboslack.api.markdown.ValueDecorator;
 import java.net.URL;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 
 /**
@@ -56,8 +57,7 @@ public final class SlackDateTimeBuilder {
     }
 
     private static String computeFallbackText(SlackDateTimeFormat format, long epochTimestamp) {
-        Instant instant = Instant.ofEpochSecond(epochTimestamp);
-        return format.formatter().format(instant);
+        return format.formatter().format(LocalDateTime.ofEpochSecond(epochTimestamp, 0, ZoneOffset.UTC));
     }
 
     public String build(long epochTimestamp) {

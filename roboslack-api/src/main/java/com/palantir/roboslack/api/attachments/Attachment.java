@@ -72,7 +72,6 @@ public abstract class Attachment {
     @Value.Check
     protected final void check() {
         checkArgument(!Strings.isNullOrEmpty(fallback()), "Attachment fallback message cannot be null or empty");
-        MorePreconditions.checkDoesNotContainMarkdown(FALLBACK_FIELD, fallback());
     }
 
     /**

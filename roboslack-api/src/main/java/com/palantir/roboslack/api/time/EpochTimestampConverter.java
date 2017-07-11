@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
@@ -48,7 +49,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertLocalTime(LocalTime localTime) {
-        return convertLocalDateTime(localTime.atDate(LocalDate.ofEpochDay(0)));
+        return convertLocalDateTime(localTime.atDate(LocalDate.now(ZoneId.of("UTC"))));
     }
 
     public static long convertLocalDate(LocalDate localDate) {
@@ -68,7 +69,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertOffsetTime(OffsetTime offsetTime) {
-        return convertOffsetDateTime(offsetTime.atDate(LocalDate.ofEpochDay(0)));
+        return convertOffsetDateTime(offsetTime.atDate(LocalDate.now(ZoneId.of("UTC"))));
     }
 
     public static long convert(Temporal object) {

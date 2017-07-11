@@ -73,14 +73,14 @@ public enum FormatToken {
      * If client is set to show 24hr format: {@code kk:mm} <br/>
      * (ie. {@code 06:39} or {@code 18:39}) <br/>
      */
-    TIME("hh:mm a"), // Default to 12hr format
+    TIME("kk:mm"), // Default to 24hr format
     /**
      * If client is set to show 12hr format: {@code hh:mm:ss a} <br/>
      * (ie. {@code 6:39:45 AM} or {@code 6:39:42 PM}) <br/>
      * If client is set to show 24hr format: {@code kk:mm:ss} <br/>
      * (ie. {@code 06:39:45} or {@code 18:39:42}) <br/>
      */
-    TIME_SECS("hh:mm:ss a"); // Default to 12hr format
+    TIME_SECS("kk:mm:ss"); // Default to 24hr format
 
     private static final ValueDecorator<String> TOKEN_DECORATOR = StringDecorator.of("{", "}");
 

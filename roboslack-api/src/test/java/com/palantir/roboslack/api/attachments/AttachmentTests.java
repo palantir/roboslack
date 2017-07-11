@@ -19,7 +19,6 @@ package com.palantir.roboslack.api.attachments;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -63,8 +62,7 @@ public final class AttachmentTests {
     @SuppressWarnings("unchecked") // Called from reflection
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
-                () -> Attachment.builder().fallback("").build(),
-                () -> Attachment.builder().fallback("_markdown_").build()
+                () -> Attachment.builder().fallback("").build()
         );
     }
 
@@ -82,8 +80,7 @@ public final class AttachmentTests {
     @MethodSource(value = "invalidConstructors")
     void testConstructionConstraints(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
-        assertThat(thrown.getMessage(), either(containsString("cannot be null or empty"))
-                .or(containsString("cannot contain markdown")));
+        assertThat(thrown.getMessage(), containsString("cannot be null or empty"));
     }
 
     @ParameterizedTest

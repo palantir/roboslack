@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
@@ -41,6 +42,16 @@ class EpochTimestampConverterTests {
 
     private static final long EXACT_EXAMPLE = 1392734382L; // 2014-02-18 6:39:42 AM
 
+    private static long expectedLocalTimeConversion(LocalTime localTime) {
+        return localTime.atDate(LocalDate.now(ZoneId.of("UTC"))).toEpochSecond(ZoneOffset.UTC);
+    }
+
+    private static long expectedOffsetTimeConversion(OffsetTime offsetTime) {
+        return offsetTime.atDate(LocalDate.now(ZoneId.of("UTC")))
+                .atZoneSameInstant(ZoneOffset.UTC)
+                .toInstant().getEpochSecond();
+    }
+
     private static final ImmutableMap<Temporal, Long> CONVERSION_FIXTURES = ImmutableMap.<Temporal, Long>builder()
             // Exact conversions
             .put(Instant.ofEpochSecond(EXACT_EXAMPLE), EXACT_EXAMPLE)
@@ -49,8 +60,10 @@ class EpochTimestampConverterTests {
             .put(OffsetDateTime.ofInstant(Instant.ofEpochSecond(EXACT_EXAMPLE), ZoneOffset.UTC), EXACT_EXAMPLE)
             // Loose conversions (granularity inferred)
             .put(LocalDate.of(2014, 2, 18), 1392681600L)
-            .put(LocalTime.of(6, 39, 42, 0), 23982L)
-            .put(OffsetTime.of(LocalTime.of(6, 39, 42, 0), ZoneOffset.UTC), 23982L)
+            .put(LocalTime.of(6, 39, 42, 0),
+                    expectedLocalTimeConversion(LocalTime.of(6, 39, 42, 0)))
+            .put(OffsetTime.of(LocalTime.of(6, 39, 42, 0), ZoneOffset.UTC),
+                    expectedOffsetTimeConversion(OffsetTime.of(LocalTime.of(6, 39, 42, 0), ZoneOffset.UTC)))
             .build();
 
     @ParameterizedTest
