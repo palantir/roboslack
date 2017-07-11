@@ -100,8 +100,7 @@ public enum FormatToken {
 
     @JsonCreator
     public static FormatToken of(@CheckForNull String input) {
-        return ofSafe(input)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND_ERR, input)));
+        return ofSafe(input).orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND_ERR, input)));
     }
 
     @Override

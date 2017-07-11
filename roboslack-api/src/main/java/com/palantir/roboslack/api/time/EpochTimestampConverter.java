@@ -29,32 +29,15 @@ import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
 /**
- * Converts a given {@link Temporal} into the epoch timestamp (second precision) format that Slack expects when
- * handling dates and times.  Currently not all {@link Temporal} types are handled, but the ones that are handled include:
- * <ul>
- *     <li>{@link Instant}</li>
- *     <li>{@link LocalTime}</li>
- *     <li>{@link LocalDate}</li>
- *     <li>{@link LocalDateTime}</li>
- *     <li>{@link ZonedDateTime}</li>
- *     <li>{@link OffsetDateTime}</li>
- *     <li>{@link OffsetTime}</li>
- * </ul>
+ * Converts a given {@link Temporal} into the epoch timestamp (second precision) format that Slack expects when handling
+ * dates and times.  Currently not all {@link Temporal} types are handled, but the ones that are handled include: <ul>
+ * <li>{@link Instant}</li> <li>{@link LocalTime}</li> <li>{@link LocalDate}</li> <li>{@link LocalDateTime}</li>
+ * <li>{@link ZonedDateTime}</li> <li>{@link OffsetDateTime}</li> <li>{@link OffsetTime}</li> </ul>
  *
- * @since 1.0.0
  * @see Temporal
+ * @since 1.0.0
  */
 public final class EpochTimestampConverter {
-
-    /**
-     * Slack refuses to process any epoch timestamp that is less than eight (8) characters in length. When doing a loose
-     * conversion and inferring granularity (ie. inferring {@link LocalDate} of {@link LocalTime}), this constant is
-     * used to adjust the resulting epoch conversion to the epoch timestamp that will result in a length of eight (8)
-     * characters.
-     * <p>
-     * Who knows why this exists, maybe it's a bug in Slack itself? *shrug*
-     */
-    private static final long MIN_EPOCH_DAY = 116;
 
     private static final String CONVERT_ERR = "Unable to convert object of type '%s' to epoch timestamp";
 
@@ -65,7 +48,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertLocalTime(LocalTime localTime) {
-        return convertLocalDateTime(localTime.atDate(LocalDate.ofEpochDay(MIN_EPOCH_DAY)));
+        return convertLocalDateTime(localTime.atDate(LocalDate.ofEpochDay(0)));
     }
 
     public static long convertLocalDate(LocalDate localDate) {
@@ -85,7 +68,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertOffsetTime(OffsetTime offsetTime) {
-        return convertOffsetDateTime(offsetTime.atDate(LocalDate.ofEpochDay(MIN_EPOCH_DAY)));
+        return convertOffsetDateTime(offsetTime.atDate(LocalDate.ofEpochDay(0)));
     }
 
     public static long convert(Temporal object) {
