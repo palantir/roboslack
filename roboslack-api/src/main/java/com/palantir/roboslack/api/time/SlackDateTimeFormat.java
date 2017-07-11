@@ -19,6 +19,7 @@ package com.palantir.roboslack.api.time;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.palantir.roboslack.utils.MorePreconditions;
@@ -40,6 +41,7 @@ import java.util.stream.Stream;
  */
 public final class SlackDateTimeFormat {
 
+    private static final String PATTERN_EMPTY_ERR = "Pattern cannot be null or empty";
     private static final String FORMAT_TOKENS_ERR = "Must contain at least one FormatToken "
             + "in order to be processed by Slack correctly.";
     private static final Range<Integer> AT_LEAST_ONE = Range.atLeast(1);
@@ -51,6 +53,7 @@ public final class SlackDateTimeFormat {
     private String pattern;
 
     private SlackDateTimeFormat(String pattern) {
+        checkArgument(!Strings.isNullOrEmpty(pattern), PATTERN_EMPTY_ERR);
         checkArgument(MorePreconditions.containsDateTimeFormatTokens(pattern, AT_LEAST_ONE),
                 FORMAT_TOKENS_ERR);
         this.pattern = pattern;

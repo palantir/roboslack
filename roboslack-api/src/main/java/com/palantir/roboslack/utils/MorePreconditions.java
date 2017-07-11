@@ -90,7 +90,7 @@ public final class MorePreconditions {
 
     /**
      * Returns true if the {@code text} contains a summed count of instances of {@link FormatToken} values, based on the
-     * sum count {@link Range<Integer>} {@code acceptanceRange}.
+     * sum count {@link Range} {@code acceptanceRange}.
      *
      * @param text the text to count {@link FormatToken} instances on
      * @param acceptanceRange the range threshold

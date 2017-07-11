@@ -84,9 +84,9 @@ public enum FormatToken {
 
     private static final ValueDecorator<String> TOKEN_DECORATOR = StringDecorator.of("{", "}");
 
-    private static final String NOT_FOUND_ERR = "No Format Token value matching: %s";
+    private static final String NOT_FOUND_ERR = "No Format Token value matching: '%s'";
 
-    private String pattern;
+    private final String pattern;
 
     FormatToken(String pattern) {
         this.pattern = pattern;

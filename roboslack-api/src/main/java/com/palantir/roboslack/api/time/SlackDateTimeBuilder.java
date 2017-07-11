@@ -47,12 +47,12 @@ public final class SlackDateTimeBuilder {
         return new SlackDateTimeBuilder(format);
     }
 
-    public static SlackDateTimeBuilder of(String formatPattern) {
-        return new SlackDateTimeBuilder(SlackDateTimeFormat.of(formatPattern));
+    public static SlackDateTimeBuilder of(String pattern) {
+        return of(SlackDateTimeFormat.of(pattern));
     }
 
     public static SlackDateTimeBuilder of(FormatToken token, FormatToken... tokens) {
-        return new SlackDateTimeBuilder(SlackDateTimeFormat.of(token, tokens));
+        return of(SlackDateTimeFormat.of(token, tokens));
     }
 
     private static String computeFallbackText(SlackDateTimeFormat format, long epochTimestamp) {

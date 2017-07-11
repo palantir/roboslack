@@ -29,14 +29,12 @@ class SlackDateTimeFormatTests {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "",
             "-",
             "Something without tokens",
             "{not-a-token}",
             "{}",
             "{date",
-            "time}"
-    })
+            "time}"})
     void testInvalidConstruction(String pattern) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, () -> SlackDateTimeFormat.of(pattern));
         assertThat(thrown.getMessage(), containsString("at least one FormatToken"));
@@ -47,8 +45,7 @@ class SlackDateTimeFormatTests {
             "Processed on: {date}",
             "{time} on {date_long_pretty}",
             "{time_secs}",
-            "{date_long}T{time_secs}"
-    })
+            "{date_long}T{time_secs}"})
     void testValidConstruction(String pattern) {
         SlackDateTimeFormat format = SlackDateTimeFormat.of(pattern);
         assertValid(format);
