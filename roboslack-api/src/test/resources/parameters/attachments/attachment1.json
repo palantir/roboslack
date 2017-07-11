@@ -24,5 +24,6 @@
   "thumb_url": "https://www.palantir.com/build/images/about/phil-eng-hero.jpg",
   "footer": "Footer",
   "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
-  "ts": 1497012014
+  "ts": 1497012014,
+  "mrkdwn_in": []
 }

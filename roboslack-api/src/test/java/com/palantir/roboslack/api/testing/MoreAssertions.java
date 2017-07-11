@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.palantir.roboslack.jackson.ObjectMappers;
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -39,8 +41,9 @@ public final class MoreAssertions {
             // Then reserializing and comparing
             String reserialized = OBJECT_MAPPER.writeValueAsString(instance);
             assertEquals(serialized.toString(), reserialized,
-                    String.format("Serialized input '%s' does not match reserialized string: '%s'",
-                            serialized.toString(), reserialized));
+                    String.format("Serialized input %s does not match reserialized string: %s",
+                            Joiner.on(serialized.toString()).join(ImmutableList.of(System.lineSeparator())),
+                            Joiner.on(reserialized).join(ImmutableList.of(System.lineSeparator()))));
         } catch (IOException e) {
             fail(e);
         }
