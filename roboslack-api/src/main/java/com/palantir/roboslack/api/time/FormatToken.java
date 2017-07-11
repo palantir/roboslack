@@ -106,7 +106,7 @@ public enum FormatToken {
 
     @Override
     public String toString() {
-        return TOKEN_DECORATOR.decorate(name());
+        return TOKEN_DECORATOR.decorate(name().toLowerCase());
     }
 
     public String pattern() {

@@ -19,23 +19,34 @@ package com.palantir.roboslack.api.time;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Range;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
+/**
+ * Represents the formatting pattern that Slack can apply to an epoch timestamp.  It is also used to format the
+ * fallback text of a {@link SlackDateTime} before it is sent to Slack.
+ *
+ * @see java.time.format.DateTimeFormatter
+ * @see SlackDateTime
+ * @since 1.0.0
+ */
 public final class SlackDateTimeFormat {
 
     private static final String FORMAT_TOKENS_ERR = "Must contain at least one FormatToken "
             + "in order to be processed by Slack correctly.";
     private static final Range<Integer> AT_LEAST_ONE = Range.atLeast(1);
 
-    private static final String FORMAT_TOKENS_SPLIT_PATTERN = String.format("[%s]", Joiner.on("|")
-            .join(FormatToken.values()));
+    private static final String FORMAT_TOKENS_PATTERN = Joiner.on("|").join(Stream.of(FormatToken.values())
+            .map(token -> "\\" + token.toString()) // Escape format token literals
+            .collect(ImmutableList.toImmutableList()));
 
     private String pattern;
 
@@ -45,20 +56,40 @@ public final class SlackDateTimeFormat {
         this.pattern = pattern;
     }
 
-    private static List<String> splitPatternOnFormatTokens(String pattern) {
-        return Splitter.on(Pattern.compile(FORMAT_TOKENS_SPLIT_PATTERN))
-                .omitEmptyStrings()
-                .splitToList(pattern);
+    public static SlackDateTimeFormat of(String pattern) {
+        return new SlackDateTimeFormat(pattern);
+    }
+
+    public static SlackDateTimeFormat of(FormatToken... tokens) {
+        return new SlackDateTimeFormat(Joiner.on(" ").join(tokens));
+    }
+
+    private static List<String> tokenizePattern(String pattern) {
+        ImmutableList.Builder<String> tokens = ImmutableList.builder();
+        Matcher matcher = Pattern.compile(FORMAT_TOKENS_PATTERN, Pattern.CASE_INSENSITIVE).matcher(pattern);
+        int currentIndex = 0;
+        while (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
+            if (start > currentIndex) {
+                tokens.add(pattern.substring(currentIndex, start));
+                tokens.add(pattern.substring(start, end));
+            } else {
+                tokens.add(pattern.substring(start, end));
+            }
+            currentIndex = end;
+        }
+        return tokens.build();
     }
 
     private static DateTimeFormatter formatter(String pattern) {
         DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder();
-        for (String patternPart : splitPatternOnFormatTokens(pattern)) {
-            Optional<FormatToken> formatToken = FormatToken.ofSafe(patternPart);
+        for (String patternToken : tokenizePattern(pattern)) {
+            Optional<FormatToken> formatToken = FormatToken.ofSafe(patternToken);
             if (formatToken.isPresent()) {
                 formatterBuilder.appendPattern(formatToken.get().pattern());
             } else {
-                formatterBuilder.appendLiteral(patternPart);
+                formatterBuilder.appendLiteral(patternToken);
             }
         }
         return formatterBuilder.toFormatter();

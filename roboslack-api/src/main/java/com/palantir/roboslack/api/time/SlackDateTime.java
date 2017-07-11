@@ -18,15 +18,24 @@ package com.palantir.roboslack.api.time;
 
 import com.palantir.roboslack.api.markdown.StringDecorator;
 import com.palantir.roboslack.api.markdown.ValueDecorator;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.temporal.Temporal;
 import java.util.Optional;
 
+/**
+ *
+ *
+ * @see <a href="https://api.slack.com/docs/message-formatting">Message Formatting</a>
+ * @see SlackDateTimeFormat
+ * @since 1.0.0
+ */
 public final class SlackDateTime {
 
     private static final ValueDecorator<String> OUTPUT_DECORATOR = StringDecorator.of("<!date", ">");
     private static final String COMPONENT_FORMAT = "^%s";
+    private static final String FALLBACK_FORMAT = "|%s";
 
     private long epochTimestamp;
     private SlackDateTimeFormat format;
@@ -37,6 +46,23 @@ public final class SlackDateTime {
         this.format = format;
         this.link = link;
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static SlackDateTime of(long epochTimestamp, SlackDateTimeFormat format, URL link) {
+        return builder().epochTimestamp(epochTimestamp).format(format).link(link).build();
+    }
+
+    public static SlackDateTime of(long epochTimestamp, SlackDateTimeFormat format) {
+        return builder().epochTimestamp(epochTimestamp).format(format).build();
+    }
+
+    public static SlackDateTime of(Temporal temporal, SlackDateTimeFormat format) {
+
+    }
+
 
     private static String computeFallbackText(SlackDateTimeFormat format, long epochTimestamp) {
         Instant instant = Instant.ofEpochSecond(epochTimestamp);
@@ -49,7 +75,7 @@ public final class SlackDateTime {
         output.append(String.format(COMPONENT_FORMAT, epochTimestamp));
         output.append(String.format(COMPONENT_FORMAT, format));
         link.ifPresent(l -> output.append(String.format(COMPONENT_FORMAT, l.toString())));
-        output.append(String.format("|%s", computeFallbackText(format, epochTimestamp)));
+        output.append(String.format(FALLBACK_FORMAT, computeFallbackText(format, epochTimestamp)));
         return OUTPUT_DECORATOR.decorate(output.toString());
     }
 
@@ -75,6 +101,15 @@ public final class SlackDateTime {
 
         public Builder link(URL value) {
             this.link = Optional.of(value);
+            return this;
+        }
+
+        public Builder link(String value) {
+            try {
+                this.link = Optional.of(new URL(value));
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException(String.format("Not a valid URL: %s", value));
+            }
             return this;
         }
 
