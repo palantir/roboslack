@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.palantir.roboslack.api.attachments.components.Author;
 import com.palantir.roboslack.api.attachments.components.Color;
 import com.palantir.roboslack.api.attachments.components.Field;
@@ -35,6 +36,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
@@ -193,11 +195,11 @@ public abstract class Attachment {
      *
      * @return the {@link Collection} of {@code markdownInputs}
      */
-    @Value.Derived
+    @Value.Default
     @JsonProperty(MARKDOWN_INPUTS_FIELD)
-    public Collection<MarkdownInput> markdownInputs() {
+    public Set<MarkdownInput> markdownInputs() {
         // inspect the values of the Attachment object and create the mrkdwnIn list.
-        ImmutableList.Builder<MarkdownInput> markdownInputs = ImmutableList.builder();
+        ImmutableSet.Builder<MarkdownInput> markdownInputs = ImmutableSet.builder();
         // check if the pretext contains Markdown.
         if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
             markdownInputs.add(MarkdownInput.PRETEXT);
