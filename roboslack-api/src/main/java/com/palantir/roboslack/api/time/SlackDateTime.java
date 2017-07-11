@@ -19,7 +19,7 @@ package com.palantir.roboslack.api.time;
 import java.time.temporal.Temporal;
 
 /**
- * Static utility methods for creating formatted date {@link String}s.
+ * Static factory methods for creating formatted date {@link String}s that will be processed by Slack.
  *
  * @see <a href="https://api.slack.com/docs/message-formatting">Message Formatting</a>
  * @see SlackDateTimeFormat
@@ -29,12 +29,40 @@ public final class SlackDateTime {
 
     private SlackDateTime() {}
 
-    public String create(SlackDateTimeFormat format, long epochTimestamp) {
-        return SlackDateTimeBuilder.of(format).build(epochTimestamp);
+    public String create(long epochTimestamp, SlackDateTimeFormat format) {
+        return builder(format).build(epochTimestamp);
     }
 
-    public String create(SlackDateTimeFormat format, Temporal temporal) {
-        return SlackDateTimeBuilder.of(format).build(temporal);
+    public String create(Temporal temporal, SlackDateTimeFormat format) {
+        return builder(format).build(temporal);
+    }
+
+    public String create(long epochTimestamp, String formatPattern) {
+        return builder(formatPattern).build(epochTimestamp);
+    }
+
+    public String create(Temporal temporal, String formatPattern) {
+        return builder(formatPattern).build(temporal);
+    }
+
+    public String create(long epochTimestamp, FormatToken token, FormatToken... tokens) {
+        return builder(token, tokens).build(epochTimestamp);
+    }
+
+    public String create(Temporal temporal, FormatToken token, FormatToken... tokens) {
+        return builder(token, tokens).build(temporal);
+    }
+
+    public SlackDateTimeBuilder builder(SlackDateTimeFormat format) {
+        return SlackDateTimeBuilder.of(format);
+    }
+
+    public SlackDateTimeBuilder builder(String formatPattern) {
+        return SlackDateTimeBuilder.of(formatPattern);
+    }
+
+    public SlackDateTimeBuilder builder(FormatToken token, FormatToken... tokens) {
+        return SlackDateTimeBuilder.of(token, tokens);
     }
 
 }

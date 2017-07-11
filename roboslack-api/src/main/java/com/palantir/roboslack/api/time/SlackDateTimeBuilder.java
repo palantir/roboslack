@@ -23,7 +23,8 @@ import java.time.Instant;
 import java.time.temporal.Temporal;
 
 /**
- *
+ * This class represents a reusable builder container for a {@link SlackDateTimeFormat} that can be applied to epoch
+ * timestamp inputs.
  *
  * @see <a href="https://api.slack.com/docs/message-formatting">Message Formatting</a>
  * @see SlackDateTimeFormat
@@ -46,9 +47,25 @@ public final class SlackDateTimeBuilder {
         return new SlackDateTimeBuilder(format);
     }
 
+    public static SlackDateTimeBuilder of(String formatPattern) {
+        return new SlackDateTimeBuilder(SlackDateTimeFormat.of(formatPattern));
+    }
+
+    public static SlackDateTimeBuilder of(FormatToken token, FormatToken... tokens) {
+        return new SlackDateTimeBuilder(SlackDateTimeFormat.of(token, tokens));
+    }
+
     private static String computeFallbackText(SlackDateTimeFormat format, long epochTimestamp) {
         Instant instant = Instant.ofEpochSecond(epochTimestamp);
         return format.formatter().format(instant);
+    }
+
+    public String build(long epochTimestamp) {
+        return OUTPUT_DECORATOR.decorate(
+                String.format(OUTPUT_WITHOUT_LINK_FORMAT,
+                        epochTimestamp,
+                        format,
+                        computeFallbackText(format, epochTimestamp)));
     }
 
     public String build(long epochTimestamp, URL link) {
@@ -60,20 +77,12 @@ public final class SlackDateTimeBuilder {
                         computeFallbackText(format, epochTimestamp)));
     }
 
-    public String build(long epochTimestamp) {
-        return OUTPUT_DECORATOR.decorate(
-                String.format(OUTPUT_WITHOUT_LINK_FORMAT,
-                        epochTimestamp,
-                        format,
-                        computeFallbackText(format, epochTimestamp)));
+    public String build(Temporal temporal) {
+        return build(EpochTimestampConverter.convert(temporal));
     }
 
     public String build(Temporal temporal, URL link) {
         return build(EpochTimestampConverter.convert(temporal), link);
-    }
-
-    public String build(Temporal temporal) {
-        return build(EpochTimestampConverter.convert(temporal));
     }
 
 }

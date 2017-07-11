@@ -60,8 +60,8 @@ public final class SlackDateTimeFormat {
         return new SlackDateTimeFormat(pattern);
     }
 
-    public static SlackDateTimeFormat of(FormatToken... tokens) {
-        return new SlackDateTimeFormat(Joiner.on(" ").join(tokens));
+    public static SlackDateTimeFormat of(FormatToken first, FormatToken... tokens) {
+        return new SlackDateTimeFormat(Joiner.on(" ").join(first, tokens));
     }
 
     private static List<String> tokenizePattern(String pattern) {
