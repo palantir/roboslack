@@ -56,7 +56,6 @@ public abstract class Footer {
 
     @Value.Check
     protected final void check() {
-        MorePreconditions.checkDoesNotContainMarkdown(TEXT_FIELD, text());
         MorePreconditions.checkCharacterLength(TEXT_FIELD, text(), MAX_FOOTER_CHARACTER_LENGTH);
     }
 
@@ -68,7 +67,8 @@ public abstract class Footer {
     }
 
     /**
-     * Text that describes and contextualizes its attachment.
+     * Text that describes and contextualizes its attachment. Please note that you can pass Markdown
+     * characters in this field, but Slack will print them as literal plaintext.
      *
      * @return the text
      */

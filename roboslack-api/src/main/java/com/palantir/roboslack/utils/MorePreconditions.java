@@ -50,10 +50,6 @@ public final class MorePreconditions {
                 content.length());
     }
 
-    public static void checkDoesNotContainMarkdown(String fieldName, String content) {
-        checkArgument(!containsMarkdown(content), MARKDOWN_ERROR_FORMAT, fieldName);
-    }
-
     public static void checkHexColor(String value) {
         checkArgument(HEX_COLOR_PATTERN.matcher(value).find(), HEX_COLOR_ERROR_FORMAT, value);
     }

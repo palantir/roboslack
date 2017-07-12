@@ -19,7 +19,6 @@ package com.palantir.roboslack.api.attachments.components;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.palantir.roboslack.utils.MorePreconditions;
 import org.immutables.value.Value;
 
 /**
@@ -59,18 +58,12 @@ public abstract class Field {
 
     @Value.Check
     protected final void check() {
-        MorePreconditions.checkDoesNotContainMarkdown(TITLE_FIELD, title());
-    }
 
-    public interface Builder {
-        Builder title(String title);
-        Builder value(String value);
-        Builder isShort(boolean isShort);
-        Field build();
     }
 
     /**
-     * The bold heading above the {@link Field#value()} text.
+     * The bold heading above the {@link Field#value()} text. Please note that you can pass Markdown
+     * characters in this field, but Slack will print them as literal plaintext.
      *
      * @return the title
      */
@@ -84,5 +77,15 @@ public abstract class Field {
      */
     @JsonProperty(VALUE_FIELD)
     public abstract String value();
+
+    public interface Builder {
+        Builder title(String title);
+
+        Builder value(String value);
+
+        Builder isShort(boolean isShort);
+
+        Field build();
+    }
 
 }

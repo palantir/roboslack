@@ -72,7 +72,6 @@ public abstract class Attachment {
     @Value.Check
     protected final void check() {
         checkArgument(!Strings.isNullOrEmpty(fallback()), "Attachment fallback message cannot be null or empty");
-        MorePreconditions.checkDoesNotContainMarkdown(FALLBACK_FIELD, fallback());
     }
 
     /**
@@ -88,7 +87,8 @@ public abstract class Attachment {
 
     /**
      * The plaintext summary of this {@link Attachment}. This text is used in clients that don't show formatted text
-     * (eg. IRC, mobile notifications) and should not contain any markup.
+     * (eg. IRC, mobile notifications) and should not contain any Markdown. Please note that you can pass Markdown
+     * characters in this field, but Slack will print them as literal plaintext.
      *
      * @return the {@code fallback} text
      */

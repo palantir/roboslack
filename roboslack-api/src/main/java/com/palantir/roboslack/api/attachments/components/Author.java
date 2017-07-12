@@ -19,7 +19,6 @@ package com.palantir.roboslack.api.attachments.components;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
 import java.util.Optional;
 import org.immutables.value.Value;
@@ -50,18 +49,12 @@ public abstract class Author {
 
     @Value.Check
     protected final void check() {
-        MorePreconditions.checkDoesNotContainMarkdown(NAME_FIELD, name());
-    }
 
-    public interface Builder {
-        Builder name(String name);
-        Builder link(URL link);
-        Builder icon(URL icon);
-        Author build();
     }
 
     /**
-     * Small text used to display this {@link Author}'s {@code name}.
+     * Small text used to display this {@link Author}'s {@code name}. Please note that you can pass Markdown
+     * characters in this field, but Slack will print them as literal plaintext.
      *
      * @return the author's name
      */
@@ -71,7 +64,7 @@ public abstract class Author {
     /**
      * A valid {@link URL} that will be applied to the {@link Author#name()}.
      *
-     * @return an {@link Optional} containing the link applied to the {@code name} get the {@link Author}
+     * @return an {@link Optional} containing the link applied to the {@code name} for the {@link Author}
      */
     @JsonProperty(LINK_FIELD)
     public abstract Optional<URL> link();
@@ -80,10 +73,20 @@ public abstract class Author {
      * A valid {@link URL} that referencing a small 16x16px image that is displayed the left of the {@link
      * Author#name()}.
      *
-     * @return an {@link Optional} containing the link to the {@code icon} get the {@link Author}
+     * @return an {@link Optional} containing the link to the {@code icon} for the {@link Author}
      */
     @JsonProperty(ICON_FIELD)
     public abstract Optional<URL> icon();
+
+    public interface Builder {
+        Builder name(String name);
+
+        Builder link(URL link);
+
+        Builder icon(URL icon);
+
+        Author build();
+    }
 
 }
 
