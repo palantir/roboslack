@@ -54,8 +54,9 @@ public abstract class Title {
     }
 
     /**
-     * The title text displayed at the top of the message attachment. Please note that you can pass Markdown
-     * characters in this field, but Slack will print them as literal plaintext.
+     * The title text displayed at the top of the message attachment. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the title text
      */

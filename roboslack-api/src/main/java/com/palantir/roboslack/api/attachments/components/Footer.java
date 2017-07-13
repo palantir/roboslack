@@ -67,8 +67,9 @@ public abstract class Footer {
     }
 
     /**
-     * Text that describes and contextualizes its attachment. Please note that you can pass Markdown
-     * characters in this field, but Slack will print them as literal plaintext.
+     * Text that describes and contextualizes its attachment. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the text
      */

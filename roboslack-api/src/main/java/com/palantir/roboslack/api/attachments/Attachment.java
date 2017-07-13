@@ -86,9 +86,9 @@ public abstract class Attachment {
     }
 
     /**
-     * The plaintext summary of this {@link Attachment}. This text is used in clients that don't show formatted text
-     * (eg. IRC, mobile notifications) and should not contain any Markdown. Please note that you can pass Markdown
-     * characters in this field, but Slack will print them as literal plaintext.
+     * The plaintext summary of this {@link Attachment} used in clients that don't display formatted text. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the {@code fallback} text
      */

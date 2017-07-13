@@ -63,8 +63,7 @@ public final class AttachmentTests {
     @SuppressWarnings("unchecked") // Called from reflection
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
-                () -> Attachment.builder().fallback("").build(),
-                () -> Attachment.builder().fallback("_markdown_").build()
+                () -> Attachment.builder().fallback("").build()
         );
     }
 

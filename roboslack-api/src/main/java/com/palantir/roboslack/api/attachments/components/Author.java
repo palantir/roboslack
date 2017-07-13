@@ -53,8 +53,9 @@ public abstract class Author {
     }
 
     /**
-     * Small text used to display this {@link Author}'s {@code name}. Please note that you can pass Markdown
-     * characters in this field, but Slack will print them as literal plaintext.
+     * Small text used to display this {@link Author}'s {@code name}. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the author's name
      */
