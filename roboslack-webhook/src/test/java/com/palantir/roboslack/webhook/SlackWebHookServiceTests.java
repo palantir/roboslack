@@ -118,6 +118,39 @@ class SlackWebHookServiceTests {
                         .build())
                 .build();
 
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_PLAINTEXT_ATTACHMENT_FIELDS = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown in plaintext Attachment fields")
+                .addAttachments(Attachment.builder()
+                        .fallback(SlackMarkdown.STRIKE.decorate("attachment fallback text"))
+                        .text("some attachment text")
+                        .title(
+                                Title.builder()
+                                .text(SlackMarkdown.PREFORMAT.decorate("preformat markdown"))
+                                .build()
+                        )
+                        .author(
+                                Author.builder()
+                                .name(SlackMarkdown.QUOTE.decorate("quote markdown"))
+                                .build()
+                        )
+                        .addFields(
+                                Field.builder()
+                                        .title(SlackMarkdown.STRIKE.decorate("strikethrough markdown"))
+                                        .value("value")
+                                        .build()
+                        )
+                        .footer(
+                                Footer.builder()
+                                        .text(SlackMarkdown.ITALIC.decorate("italic markdown"))
+                                        .timestamp(LocalDateTime.now()
+                                                .atZone(ZoneId.systemDefault()).toEpochSecond())
+                                        .build()
+                        )
+                        .build())
+                .build();
+
         private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT = MessageRequest.builder()
                 .username("robo-slack")
                 .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
@@ -231,6 +264,7 @@ class SlackWebHookServiceTests {
             return Stream.of(
                     MESSAGE_SIMPLE,
                     MESSAGE_MARKDOWN_IN_ATTACHMENT_PRETEXT,
+                    MESSAGE_MARKDOWN_IN_PLAINTEXT_ATTACHMENT_FIELDS,
                     MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT,
                     MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS,
                     MESSAGE_WITH_ATTACHMENT_FOOTER,

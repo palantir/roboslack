@@ -29,24 +29,14 @@ import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 public final class FooterTests {
 
     private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/footers";
-
-    @SuppressWarnings("unused") // Called from reflection
-    static Stream<Executable> invalidMarkdownConstructors() {
-        return Stream.of(
-                () -> Footer.of("*footer*"),
-                () -> Footer.builder().text("-footer-").build()
-        );
-    }
 
     private static String generateRandomStringOfSize(int size) {
         return new Random().ints('a', 'z')
@@ -61,13 +51,6 @@ public final class FooterTests {
                 assertFalse(Strings.isNullOrEmpty(icon.getPath())));
         footer.timestamp().ifPresent(timestamp ->
                 assertFalse(Strings.isNullOrEmpty(timestamp.toString())));
-    }
-
-    @ParameterizedTest
-    @MethodSource(value = "invalidMarkdownConstructors")
-    void testDoesNotContainMarkdown(Executable executable) {
-        Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
-        assertThat(thrown.getMessage(), containsString("cannot contain markdown"));
     }
 
     @Test

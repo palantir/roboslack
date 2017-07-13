@@ -47,9 +47,7 @@ public final class TitleTests {
     @SuppressWarnings("unused") // Called from reflection
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
-                () -> Title.of(""),
-                () -> Title.of("-strike-"),
-                () -> Title.builder().text("*bold*").build()
+                () -> Title.of("")
         );
     }
 
