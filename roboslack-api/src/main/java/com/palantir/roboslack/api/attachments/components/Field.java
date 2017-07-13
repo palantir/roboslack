@@ -65,6 +65,7 @@ public abstract class Field {
      * The bold heading above the {@link Field#value()} text. <br/>
      * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
      * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
+     * Note that Slack does allow this field to contain emoji, but no other Markdown.
      *
      * @return the title
      */
