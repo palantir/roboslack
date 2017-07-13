@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
 import java.util.Optional;
 import org.immutables.value.Value;
@@ -51,18 +50,13 @@ public abstract class Title {
 
     @Value.Check
     protected final void check() {
-        MorePreconditions.checkDoesNotContainMarkdown(TEXT_FIELD, text());
         checkArgument(!Strings.isNullOrEmpty(text()), "The title text field cannot be null or empty");
     }
 
-    public interface Builder {
-        Builder text(String text);
-        Builder link(URL link);
-        Title build();
-    }
-
     /**
-     * The title text displayed at the top get the message attachment.
+     * The title text displayed at the top of the message attachment. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the title text
      */
@@ -76,5 +70,13 @@ public abstract class Title {
      */
     @JsonProperty(LINK_FIELD)
     public abstract Optional<URL> link();
+
+    public interface Builder {
+        Builder text(String text);
+
+        Builder link(URL link);
+
+        Title build();
+    }
 
 }

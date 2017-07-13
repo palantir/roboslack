@@ -24,23 +24,26 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
+import com.palantir.roboslack.api.testing.MoreAssertions;
 import com.palantir.roboslack.api.testing.MoreReflection;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public final class ColorTests {
+
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/colors";
 
     public static void assertValid(Color color) {
         Assertions.assertFalse(Strings.isNullOrEmpty(color.toString()));
@@ -98,19 +101,19 @@ public final class ColorTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedColorsProvider.class)
-    void testDeserialization(Color color) {
-        assertValid(color);
+    void testSerialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Color.class,
+                ColorTests::assertValid);
     }
 
     static class SerializedColorsProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/colors";
-
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Color.class, RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
+
     }
 
 }

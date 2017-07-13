@@ -23,28 +23,31 @@ import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.palantir.roboslack.api.attachments.components.AuthorTests;
 import com.palantir.roboslack.api.attachments.components.ColorTests;
 import com.palantir.roboslack.api.attachments.components.FieldTests;
 import com.palantir.roboslack.api.attachments.components.FooterTests;
 import com.palantir.roboslack.api.attachments.components.TitleTests;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
-class AttachmentTests {
+public final class AttachmentTests {
 
-    private static void assertValid(Attachment attachment) {
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments";
+
+    public static void assertValid(Attachment attachment) {
         attachment.fields().forEach(FieldTests::assertValid);
         assertFalse(Strings.isNullOrEmpty(attachment.fallback()));
         Optional.ofNullable(attachment.color()).ifPresent(ColorTests::assertValid);
@@ -60,9 +63,7 @@ class AttachmentTests {
     @SuppressWarnings("unchecked") // Called from reflection
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
-                () -> Attachment.builder().fallback("").build(),
-                () -> Attachment.builder().fallback("text").pretext("*mark* -down-").build(),
-                () -> Attachment.builder().fallback("_markdown_").build()
+                () -> Attachment.builder().fallback("").build()
         );
     }
 
@@ -77,7 +78,7 @@ class AttachmentTests {
     }
 
     @ParameterizedTest
-    @MethodSource(names = "invalidConstructors")
+    @MethodSource(value = "invalidConstructors")
     void testConstructionConstraints(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(), either(containsString("cannot be null or empty"))
@@ -86,20 +87,19 @@ class AttachmentTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedAttachmentsProvider.class)
-    void testDeserialization(Attachment attachment) {
-        assertValid(attachment);
+    void testDeserialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Attachment.class,
+                AttachmentTests::assertValid);
     }
 
     static class SerializedAttachmentsProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments";
-
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Attachment.class, RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
-    }
 
+    }
 
 }

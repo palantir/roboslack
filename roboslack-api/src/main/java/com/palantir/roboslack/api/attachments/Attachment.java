@@ -24,15 +24,19 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.palantir.roboslack.api.attachments.components.Author;
 import com.palantir.roboslack.api.attachments.components.Color;
 import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
+import com.palantir.roboslack.api.markdown.MarkdownInput;
 import com.palantir.roboslack.utils.MorePreconditions;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.immutables.value.Value;
 
@@ -54,6 +58,7 @@ public abstract class Attachment {
     private static final String PRETEXT_FIELD = "pretext";
     private static final String IMAGE_URL_FIELD = "image_url";
     private static final String THUMB_URL_FIELD = "thumb_url";
+    private static final String MARKDOWN_INPUTS_FIELD = "mrkdwn_in";
 
     /**
      * Generate a new {@link Attachment.Builder}.
@@ -67,13 +72,11 @@ public abstract class Attachment {
     @Value.Check
     protected final void check() {
         checkArgument(!Strings.isNullOrEmpty(fallback()), "Attachment fallback message cannot be null or empty");
-        MorePreconditions.checkDoesNotContainMarkdown(FALLBACK_FIELD, fallback());
-        pretext().ifPresent(s -> MorePreconditions.checkDoesNotContainMarkdown(PRETEXT_FIELD, s));
     }
 
     /**
      * The {@link List} get {@link Field}s for this {@link Attachment}. Fields are displayed in a tabular fashion near
-     * the bottom get the {@link Attachment}.
+     * the bottom of the {@link Attachment}.
      *
      * @return the {@link List} get {@link Field}s
      */
@@ -82,25 +85,10 @@ public abstract class Attachment {
         return ImmutableList.of();
     }
 
-    public interface Builder {
-        Builder fallback(String fallback);
-        Builder color(Color color);
-        Builder pretext(String pretext);
-        Builder author(Author author);
-        Builder title(Title title);
-        Builder text(String text);
-        Builder addFields(Field field);
-        Builder addFields(Field... fields);
-        Builder fields(Iterable<? extends Field> elements);
-        Builder imageUrl(URL imageUrl);
-        Builder thumbUrl(URL thumbUrl);
-        Builder footer(Footer footer);
-        Attachment build();
-    }
-
     /**
-     * The plaintext summary of this {@link Attachment}. This text is used in clients that don't show formatted text
-     * (eg. IRC, mobile notifications) and should not contain any markup.
+     * The plaintext summary of this {@link Attachment} used in clients that don't display formatted text. <br/>
+     * <b>Note:</b> If this text contains any {@link com.palantir.roboslack.api.markdown.SlackMarkdown} special
+     * characters, they will be treated as literal plaintext characters when rendered in any Slack client.
      *
      * @return the {@code fallback} text
      */
@@ -199,6 +187,62 @@ public abstract class Attachment {
     @JsonUnwrapped
     public Footer footer() {
         return null;
+    }
+
+    /**
+     * A special list of flags that tells Slack where to expect Markdown in an Attachment.
+     * Valid values are ["pretext", "text", "fields"].
+     *
+     * @return the {@link Collection} of {@code markdownInputs}
+     */
+    @Value.Default
+    @JsonProperty(MARKDOWN_INPUTS_FIELD)
+    public Set<MarkdownInput> markdownInputs() {
+        // inspect the values of the Attachment object and create the mrkdwnIn list.
+        ImmutableSet.Builder<MarkdownInput> markdownInputs = ImmutableSet.builder();
+        // check if the pretext contains Markdown.
+        if (pretext().isPresent() && MorePreconditions.containsMarkdown(pretext().get())) {
+            markdownInputs.add(MarkdownInput.PRETEXT);
+        }
+        // check if the text contains Markdown.
+        if (text().isPresent() && MorePreconditions.containsMarkdown(text().get())) {
+            markdownInputs.add(MarkdownInput.TEXT);
+        }
+        // check if any of the Fields' values contain Markdown.
+        fields().stream()
+                .map(Field::value)
+                .filter(MorePreconditions::containsMarkdown)
+                .findFirst()
+                .ifPresent(ignored -> markdownInputs.add(MarkdownInput.FIELDS));
+        return markdownInputs.build();
+    }
+
+    public interface Builder {
+        Builder fallback(String fallback);
+
+        Builder color(Color color);
+
+        Builder pretext(String pretext);
+
+        Builder author(Author author);
+
+        Builder title(Title title);
+
+        Builder text(String text);
+
+        Builder addFields(Field field);
+
+        Builder addFields(Field... fields);
+
+        Builder fields(Iterable<? extends Field> elements);
+
+        Builder imageUrl(URL imageUrl);
+
+        Builder thumbUrl(URL thumbUrl);
+
+        Builder footer(Footer footer);
+
+        Attachment build();
     }
 
 }

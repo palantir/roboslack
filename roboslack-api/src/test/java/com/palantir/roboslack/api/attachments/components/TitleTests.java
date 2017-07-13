@@ -22,19 +22,22 @@ import static org.hamcrest.Matchers.either;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class TitleTests {
+
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/titles";
 
     public static void assertValid(Title title) {
         assertFalse(Strings.isNullOrEmpty(title.text()));
@@ -44,14 +47,12 @@ public final class TitleTests {
     @SuppressWarnings("unused") // Called from reflection
     static Stream<Executable> invalidConstructors() {
         return Stream.of(
-                () -> Title.of(""),
-                () -> Title.of("-strike-"),
-                () -> Title.builder().text("*bold*").build()
+                () -> Title.of("")
         );
     }
 
     @ParameterizedTest
-    @MethodSource(names = "invalidConstructors")
+    @MethodSource(value = "invalidConstructors")
     void testConstructionConstraints(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(),
@@ -61,18 +62,19 @@ public final class TitleTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedTitlesProvider.class)
-    void testDeserialization(Title title) {
-        assertValid(title);
+    void testDeserialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Title.class,
+                TitleTests::assertValid);
     }
 
     static class SerializedTitlesProvider implements ArgumentsProvider {
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/titles";
 
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Title.class, RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
+
     }
 
 }

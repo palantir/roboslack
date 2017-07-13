@@ -42,7 +42,7 @@ public final class SlackMarkdown {
      */
     public static final String BOLD_DECORATION = "*";
     public static final String ITALIC_DECORATION = "_";
-    public static final String STRIKE_DECORATION = "-";
+    public static final String STRIKE_DECORATION = "~";
     public static final String EMOJI_DECORATION = ":";
     public static final String PREFORMAT_DECORATION = "`";
     public static final String PREFORMAT_MULTILINE_DECORATION = "```";
@@ -66,7 +66,7 @@ public final class SlackMarkdown {
     public static final ValueDecorator<String> EMOJI = StringDecorator.of(EMOJI_DECORATION);
     public static final ValueDecorator<String> PREFORMAT = StringDecorator.of(PREFORMAT_DECORATION);
     public static final ValueDecorator<String> PREFORMAT_MULTILINE = StringDecorator.of(
-            PREFORMAT_MULTILINE_DECORATION + NEWLINE_SEPARATOR, PREFORMAT_MULTILINE_DECORATION);
+            PREFORMAT_MULTILINE_DECORATION + NEWLINE_SEPARATOR, NEWLINE_SEPARATOR + PREFORMAT_MULTILINE_DECORATION);
     public static final ValueDecorator<String> MENTION_USER = StringDecorator.ofPrefix(MENTION_USER_PREFIX);
     public static final ValueDecorator<String> MENTION_CHANNEL = StringDecorator.ofPrefix(MENTION_CHANNEL_PREFIX);
     public static final ValueDecorator<String> QUOTE = StringDecorator.of(NEWLINE_SEPARATOR + QUOTE_PREFIX,

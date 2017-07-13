@@ -17,10 +17,10 @@
 package com.palantir.roboslack.webhook.api;
 
 import com.palantir.roboslack.api.MessageRequest;
+import com.palantir.roboslack.webhook.api.model.response.ResponseCode;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -37,7 +37,7 @@ import retrofit2.http.Path;
 public interface SlackWebHook {
 
     @POST("{token_t_part}/{token_b_part}/{token_x_part}")
-    Call<ResponseBody> sendMessage(
+    Call<ResponseCode> sendMessage(
             @Path("token_t_part") String tokenTPart,
             @Path("token_b_part") String tokenBPart,
             @Path("token_x_part") String tokenXPart,

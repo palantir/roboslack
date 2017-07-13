@@ -20,6 +20,8 @@ package com.palantir.roboslack.webhook;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.google.common.collect.ImmutableList;
@@ -37,13 +39,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
+import javax.annotation.ParametersAreNonnullByDefault;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 class SlackWebHookServiceTests {
 
@@ -58,9 +67,36 @@ class SlackWebHookServiceTests {
 
     @ParameterizedTest
     @ArgumentsSource(MessageRequestProvider.class)
-    void testSendMessage(MessageRequest messageRequest) {
+    void testSendMessage(MessageRequest messageRequest, TestInfo testInfo) {
         assertThat(SlackWebHookService.with(assumingEnvironmentWebHookToken())
-                .sendMessage(messageRequest), is(equalTo(ResponseCode.OK)));
+                        .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
+                is(equalTo(ResponseCode.OK)));
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(MessageRequestProvider.class)
+    void testSendMessageAsync(MessageRequest messageRequest, TestInfo testInfo) {
+        AtomicBoolean submitted = new AtomicBoolean(false);
+        SlackWebHookService.with(assumingEnvironmentWebHookToken())
+                .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo),
+                        new Callback<ResponseCode>() {
+                            @Override
+                            @ParametersAreNonnullByDefault
+                            public void onResponse(Call<ResponseCode> call, Response<ResponseCode> response) {
+                                submitted.set(true);
+                                assertTrue(call.isExecuted());
+                                assertThat(response.body(), is(equalTo(ResponseCode.OK)));
+                            }
+
+                            @Override
+                            @ParametersAreNonnullByDefault
+                            public void onFailure(Call<ResponseCode> call, Throwable throwable) {
+                                submitted.set(true);
+                                assertTrue(call.isExecuted());
+                                fail(throwable);
+                            }
+                        });
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).untilTrue(submitted);
     }
 
     static class MessageRequestProvider implements ArgumentsProvider {
@@ -69,6 +105,78 @@ class SlackWebHookServiceTests {
                 .username("robo-slack")
                 .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
                 .text("The simplest message")
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_PRETEXT = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown pretext in Attachment")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .pretext(SlackMarkdown.BOLD.decorate("bold markdown"))
+                        .text("some attachment text")
+                        .build())
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_PLAINTEXT_ATTACHMENT_FIELDS = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown in plaintext Attachment fields")
+                .addAttachments(Attachment.builder()
+                        .fallback(SlackMarkdown.STRIKE.decorate("attachment fallback text"))
+                        .text("some attachment text")
+                        .title(
+                                Title.builder()
+                                .text(SlackMarkdown.PREFORMAT.decorate("preformat markdown"))
+                                .build()
+                        )
+                        .author(
+                                Author.builder()
+                                .name(SlackMarkdown.QUOTE.decorate("quote markdown"))
+                                .build()
+                        )
+                        .addFields(
+                                Field.builder()
+                                        .title(SlackMarkdown.STRIKE.decorate("strikethrough markdown"))
+                                        .value("value")
+                                        .build()
+                        )
+                        .footer(
+                                Footer.builder()
+                                        .text(SlackMarkdown.ITALIC.decorate("italic markdown"))
+                                        .timestamp(LocalDateTime.now()
+                                                .atZone(ZoneId.systemDefault()).toEpochSecond())
+                                        .build()
+                        )
+                        .build())
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown text in Attachment")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .text(SlackMarkdown.EMOJI.decorate("boom"))
+                        .build())
+                .build();
+
+        private static final MessageRequest MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji(SlackMarkdown.EMOJI.decorate("smile"))
+                .text("Message with Markdown in Attachment Field values")
+                .addAttachments(Attachment.builder()
+                        .fallback("attachment fallback text")
+                        .text("some attachment text")
+                        .addFields(Field.builder()
+                                        .title("strike field")
+                                        .value(SlackMarkdown.STRIKE.decorate("strike text"))
+                                        .build(),
+                                Field.builder()
+                                        .title("markdown field")
+                                        .value(SlackMarkdown.PREFORMAT.decorate("some code"))
+                                        .build())
+                        .build())
                 .build();
 
         private static final MessageRequest MESSAGE_WITH_ATTACHMENT_FOOTER = MessageRequest.builder()
@@ -152,15 +260,18 @@ class SlackWebHookServiceTests {
         }
 
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
             return Stream.of(
                     MESSAGE_SIMPLE,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_PRETEXT,
+                    MESSAGE_MARKDOWN_IN_PLAINTEXT_ATTACHMENT_FIELDS,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_TEXT,
+                    MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS,
                     MESSAGE_WITH_ATTACHMENT_FOOTER,
                     MESSAGE_WITH_ATTACHMENTS,
                     MESSAGE_COMPLEX
-            ).map(ObjectArrayArguments::create);
+            ).map(Arguments::of);
         }
-
     }
 
 }

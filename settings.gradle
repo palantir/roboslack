@@ -1,5 +1,8 @@
 rootProject.name = 'roboslack'
 
+include 'extras:jackson-support'
+include 'extras:slack-clients'
+
 include 'roboslack-api'
 include 'roboslack-webhook-api'
 include 'roboslack-webhook'

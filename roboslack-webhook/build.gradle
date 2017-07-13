@@ -20,13 +20,13 @@ apply from: "${rootDir}/gradle/immutables.gradle"
 apply from: "${rootDir}/gradle/publish.gradle"
 
 dependencies {
+    compile project(':extras:slack-clients')
+
     compile project(':roboslack-webhook-api')
 
     compile "com.google.guava:guava:${guavaVersion}"
 
-    // Retrofit for REST client specs
-    compile "com.palantir.remoting2:retrofit2-clients:${httpRemotingVersion}"
-
+    testCompile "org.awaitility:awaitility:${awaitilityVersion}"
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.mockito:mockito-core:${mockitoVersion}"
 }

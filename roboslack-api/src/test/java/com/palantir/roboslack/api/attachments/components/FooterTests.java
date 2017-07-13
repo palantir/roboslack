@@ -21,29 +21,22 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
-import com.palantir.roboslack.api.testing.ResourcesDeserializer;
+import com.palantir.roboslack.api.testing.MoreAssertions;
+import com.palantir.roboslack.api.testing.ResourcesReader;
 import java.util.Random;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ContainerExtensionContext;
-import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ObjectArrayArguments;
 
 public final class FooterTests {
 
-    @SuppressWarnings("unused") // Called from reflection
-    static Stream<Executable> invalidMarkdownConstructors() {
-        return Stream.of(
-                () -> Footer.of("*footer*"),
-                () -> Footer.builder().text("-footer-").build()
-        );
-    }
+    private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/footers";
 
     private static String generateRandomStringOfSize(int size) {
         return new Random().ints('a', 'z')
@@ -60,13 +53,6 @@ public final class FooterTests {
                 assertFalse(Strings.isNullOrEmpty(timestamp.toString())));
     }
 
-    @ParameterizedTest
-    @MethodSource(names = "invalidMarkdownConstructors")
-    void testDoesNotContainMarkdown(Executable executable) {
-        Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
-        assertThat(thrown.getMessage(), containsString("cannot contain markdown"));
-    }
-
     @Test
     void testDoesNotExceedMaxCharacterLength() {
         String string = generateRandomStringOfSize(Footer.MAX_FOOTER_CHARACTER_LENGTH + 1);
@@ -77,18 +63,17 @@ public final class FooterTests {
 
     @ParameterizedTest
     @ArgumentsSource(SerializedFootersProvider.class)
-    void testDeserialization(Footer footer) {
-        assertValid(footer);
+    void testDeserialization(JsonNode json) {
+        MoreAssertions.assertSerializable(json,
+                Footer.class,
+                FooterTests::assertValid);
     }
 
     static class SerializedFootersProvider implements ArgumentsProvider {
 
-        private static final String RESOURCES_DIRECTORY = "parameters/attachments/components/footers";
-
         @Override
-        public Stream<? extends Arguments> arguments(ContainerExtensionContext context) throws Exception {
-            return ResourcesDeserializer.deserialize(Footer.class, RESOURCES_DIRECTORY)
-                    .map(ObjectArrayArguments::create);
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return ResourcesReader.readJson(RESOURCES_DIRECTORY).map(Arguments::of);
         }
 
     }

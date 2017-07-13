@@ -45,13 +45,13 @@ class LinkDecoratorTests {
     }
 
     @ParameterizedTest
-    @MethodSource(names = "illegalStateConstructors")
+    @MethodSource(value = "illegalStateConstructors")
     void testIllegalStateConstructors(Executable executable) {
         assertThrows(IllegalStateException.class, executable);
     }
 
     @ParameterizedTest
-    @MethodSource(names = "illegalArgumentConstructors")
+    @MethodSource(value = "illegalArgumentConstructors")
     void testIllegalArgumentConstruction(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(), containsString("present and valid"));

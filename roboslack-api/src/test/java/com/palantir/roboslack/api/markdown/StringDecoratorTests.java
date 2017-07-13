@@ -66,20 +66,20 @@ class StringDecoratorTests {
     }
 
     @ParameterizedTest
-    @MethodSource(names = "nullPointerExceptionConstructors")
+    @MethodSource(value = "nullPointerExceptionConstructors")
     void testNullConstruction(Executable executable) {
         assertThrows(NullPointerException.class, executable);
     }
 
     @ParameterizedTest
-    @MethodSource(names = "illegalArgumentConstructors")
+    @MethodSource(value = "illegalArgumentConstructors")
     void testInvalidConstruction(Executable executable) {
         Throwable thrown = assertThrows(IllegalArgumentException.class, executable);
         assertThat(thrown.getMessage(), containsString("present and valid"));
     }
 
     @ParameterizedTest
-    @MethodSource(names = "validDecorators")
+    @MethodSource(value = "validDecorators")
     void testDecorate(StringDecorator decorator) {
         String decorated = decorator.decorate(EXAMPLE_INPUT_STRING);
         assertThat(decorated, is(not(equalTo(EXAMPLE_INPUT_STRING))));
