@@ -30,7 +30,7 @@ import retrofit2.Callback;
 /**
  * Main entry point class to interact with a {@link SlackWebHook}. Instantiate it with a {@link WebHookToken} and a
  * {@code userAgent} {@link String}, then send your composed {@link MessageRequest}s via the {@link
- * SlackWebHookService#sendMessageAsync(MessageRequest)} method. Ensure that you check the returned {@link ResponseCode}
+ * SlackWebHookService#sendMessage(MessageRequest)} method. Ensure that you check the returned {@link ResponseCode}
  * for Slack status feedback.
  */
 public final class SlackWebHookService {
@@ -97,7 +97,7 @@ public final class SlackWebHookService {
      * @return the resulting {@link ResponseCode} from the operation
      * @throws IllegalStateException if unable to connect to Slack
      */
-    public ResponseCode sendMessageAsync(MessageRequest messageRequest) {
+    public ResponseCode sendMessage(MessageRequest messageRequest) {
         try {
             return sendCall(messageRequest).execute().body();
         } catch (IOException e) {

@@ -69,7 +69,7 @@ class SlackWebHookServiceTests {
     @ArgumentsSource(MessageRequestProvider.class)
     void testSendMessage(MessageRequest messageRequest, TestInfo testInfo) {
         assertThat(SlackWebHookService.with(assumingEnvironmentWebHookToken())
-                        .sendMessageAsync(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
+                        .sendMessage(EnrichTestMessageRequest.get().apply(messageRequest, testInfo)),
                 is(equalTo(ResponseCode.OK)));
     }
 
