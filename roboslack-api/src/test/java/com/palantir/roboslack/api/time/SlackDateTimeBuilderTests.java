@@ -30,8 +30,8 @@ class SlackDateTimeBuilderTests {
 
     static Stream<Executable> invalidFormatTokenConstructors() {
         return Stream.of(
-                () -> SlackDateTimeBuilder.of(SlackDateTimeFormat.of(FormatToken.of(""))),
-                () -> SlackDateTimeBuilder.of(FormatToken.of(""))
+                () -> SlackDateTimeBuilder.of(SlackDateTimeFormat.of(DateTimeFormatToken.of(""))),
+                () -> SlackDateTimeBuilder.of(DateTimeFormatToken.of(""))
         );
     }
 
@@ -53,8 +53,8 @@ class SlackDateTimeBuilderTests {
     static Stream<Executable> validConstructors() {
         return Stream.of(
                 () -> SlackDateTimeBuilder.of("{date}"),
-                () -> SlackDateTimeBuilder.of(FormatToken.DATE_LONG),
-                () -> SlackDateTimeBuilder.of(FormatToken.DATE, FormatToken.TIME_SECS),
+                () -> SlackDateTimeBuilder.of(DateTimeFormatToken.DATE_LONG),
+                () -> SlackDateTimeBuilder.of(DateTimeFormatToken.DATE, DateTimeFormatToken.TIME_SECS),
                 () -> SlackDateTimeBuilder.of(
                         SlackDateTimeFormat.of("Written on {date_long_pretty} at {time}"))
         );

@@ -23,18 +23,18 @@ import com.google.common.base.Strings;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-class FormatTokenTests {
+class DateTimeFormatTokenTests {
 
     @ParameterizedTest
-    @EnumSource(FormatToken.class)
-    void testFormatTokenToString(FormatToken formatToken) {
+    @EnumSource(DateTimeFormatToken.class)
+    void testFormatTokenToString(DateTimeFormatToken formatToken) {
         assertTrue(formatToken.toString().startsWith("{"));
         assertTrue(formatToken.toString().endsWith("}"));
     }
 
     @ParameterizedTest
-    @EnumSource(FormatToken.class)
-    void testFormatTokenPattern(FormatToken formatToken) {
+    @EnumSource(DateTimeFormatToken.class)
+    void testFormatTokenPattern(DateTimeFormatToken formatToken) {
         assertFalse(Strings.isNullOrEmpty(formatToken.pattern()));
     }
 

@@ -40,6 +40,9 @@ import java.time.temporal.Temporal;
  */
 public final class EpochTimestampConverter {
 
+    private static final ZoneOffset UTC_OFFSET = ZoneOffset.UTC;
+    private static final ZoneId UTC_ID = ZoneId.of("UTC");
+
     private static final String CONVERT_ERR = "Unable to convert object of type '%s' to epoch timestamp";
 
     private EpochTimestampConverter() {}
@@ -49,7 +52,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertLocalTime(LocalTime localTime) {
-        return convertLocalDateTime(localTime.atDate(LocalDate.now(ZoneId.of("UTC"))));
+        return convertLocalDateTime(localTime.atDate(LocalDate.now(UTC_ID)));
     }
 
     public static long convertLocalDate(LocalDate localDate) {
@@ -57,7 +60,7 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertLocalDateTime(LocalDateTime localDateTime) {
-        return localDateTime.toEpochSecond(ZoneOffset.UTC);
+        return localDateTime.toEpochSecond(UTC_OFFSET);
     }
 
     public static long convertZonedDateTime(ZonedDateTime zonedDateTime) {
@@ -65,16 +68,16 @@ public final class EpochTimestampConverter {
     }
 
     public static long convertOffsetDateTime(OffsetDateTime offsetDateTime) {
-        return convertZonedDateTime(offsetDateTime.atZoneSameInstant(ZoneOffset.UTC));
+        return convertZonedDateTime(offsetDateTime.atZoneSameInstant(UTC_OFFSET));
     }
 
     public static long convertOffsetTime(OffsetTime offsetTime) {
-        return convertOffsetDateTime(offsetTime.atDate(LocalDate.now(ZoneId.of("UTC"))));
+        return convertOffsetDateTime(offsetTime.atDate(LocalDate.now(UTC_ID)));
     }
 
     public static long convert(Temporal object) {
-        String className = object.getClass().getName();
-        String methodName = "convert" + className.substring(className.lastIndexOf('.') + 1);
+        String className = object.getClass().getSimpleName();
+        String methodName = "convert" + className;
         try {
             Method visitMethod = EpochTimestampConverter.class.getMethod(methodName, object.getClass());
             return (long) visitMethod.invoke(null, object); // Use null for instance of class (for static methods)

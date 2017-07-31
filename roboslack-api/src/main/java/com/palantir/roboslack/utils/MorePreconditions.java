@@ -22,7 +22,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Range;
 import com.palantir.roboslack.api.markdown.SlackMarkdown;
-import com.palantir.roboslack.api.time.FormatToken;
+import com.palantir.roboslack.api.time.DateTimeFormatToken;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -77,9 +77,9 @@ public final class MorePreconditions {
     }
 
     /**
-     * Returns true if the parameter {@link String} contains any symbols that Slack would process as markdown.
-     * Bold, italic, strikethrough, and emojis are tested for in pairs - e.g. one asterisk will not return true, but
-     * a pair will.
+     * Returns true if the parameter {@link String} contains any symbols that Slack would process as markdown. Bold,
+     * italic, strikethrough, and emojis are tested for in pairs - e.g. one asterisk will not return true, but a pair
+     * will.
      *
      * @param text {@link String} for Slack markdown
      * @return {@link boolean} telling us if Slack markdown was found
@@ -89,15 +89,15 @@ public final class MorePreconditions {
     }
 
     /**
-     * Returns true if the {@code text} contains a summed count of instances of {@link FormatToken} values, based on the
-     * sum count {@link Range} {@code acceptanceRange}.
+     * Returns true if the {@code text} contains a summed count of instances of {@link DateTimeFormatToken} values,
+     * based on the sum count {@link Range} {@code acceptanceRange}.
      *
-     * @param text the text to count {@link FormatToken} instances on
+     * @param text the text to count {@link DateTimeFormatToken} instances on
      * @param acceptanceRange the range threshold
-     * @return true if contains accepted count of {@link FormatToken}, false otherwise
+     * @return true if contains accepted count of {@link DateTimeFormatToken}, false otherwise
      */
     public static boolean containsDateTimeFormatTokens(@CheckForNull String text, Range<Integer> acceptanceRange) {
-        return acceptanceRange.contains(Stream.of(FormatToken.values())
+        return acceptanceRange.contains(Stream.of(DateTimeFormatToken.values())
                 .mapToInt(token -> text.contains(token.toString()) ? 1 : 0)
                 .sum());
     }

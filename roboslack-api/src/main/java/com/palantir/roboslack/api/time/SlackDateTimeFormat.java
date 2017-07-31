@@ -47,7 +47,7 @@ public final class SlackDateTimeFormat {
             + "in order to be processed by Slack correctly.";
     private static final Range<Integer> AT_LEAST_ONE = Range.atLeast(1);
 
-    private static final String FORMAT_TOKENS_PATTERN = Joiner.on("|").join(Stream.of(FormatToken.values())
+    private static final String FORMAT_TOKENS_PATTERN = Joiner.on("|").join(Stream.of(DateTimeFormatToken.values())
             .map(token -> "\\" + token.toString()) // Escape format token literals
             .collect(ImmutableList.toImmutableList()));
 
@@ -64,8 +64,8 @@ public final class SlackDateTimeFormat {
         return new SlackDateTimeFormat(pattern);
     }
 
-    public static SlackDateTimeFormat of(FormatToken first, FormatToken... tokens) {
-        List<FormatToken> allTokens = ImmutableList.<FormatToken>builder()
+    public static SlackDateTimeFormat of(DateTimeFormatToken first, DateTimeFormatToken... tokens) {
+        List<DateTimeFormatToken> allTokens = ImmutableList.<DateTimeFormatToken>builder()
                 .add(first)
                 .addAll(Arrays.asList(tokens))
                 .build();
@@ -93,7 +93,7 @@ public final class SlackDateTimeFormat {
     private static DateTimeFormatter formatter(String pattern) {
         DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder();
         for (String patternToken : tokenizePattern(pattern)) {
-            Optional<FormatToken> formatToken = FormatToken.ofSafe(patternToken);
+            Optional<DateTimeFormatToken> formatToken = DateTimeFormatToken.ofSafe(patternToken);
             if (formatToken.isPresent()) {
                 formatterBuilder.appendPattern(formatToken.get().pattern());
             } else {

@@ -33,7 +33,7 @@ import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
 import com.palantir.roboslack.api.markdown.SlackMarkdown;
-import com.palantir.roboslack.api.time.FormatToken;
+import com.palantir.roboslack.api.time.DateTimeFormatToken;
 import com.palantir.roboslack.api.time.SlackDateTime;
 import com.palantir.roboslack.webhook.api.model.WebHookToken;
 import com.palantir.roboslack.webhook.api.model.response.ResponseCode;
@@ -232,47 +232,47 @@ class SlackWebHookServiceTests {
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with time_secs")
                         .text(String.format("time_secs: %s",
-                                SlackDateTime.create(LocalTime.now(), FormatToken.TIME_SECS)))
+                                SlackDateTime.create(LocalTime.now(), DateTimeFormatToken.TIME_SECS)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with time")
                         .text(String.format("time: %s",
-                                SlackDateTime.create(OffsetTime.now(), FormatToken.TIME)))
+                                SlackDateTime.create(OffsetTime.now(), DateTimeFormatToken.TIME)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date")
                         .text(String.format("date: %s",
-                                SlackDateTime.create(LocalTime.now(), FormatToken.DATE)))
+                                SlackDateTime.create(LocalTime.now(), DateTimeFormatToken.DATE)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_long")
                         .text(String.format("date_long: %s",
-                                SlackDateTime.create(ZonedDateTime.now(), FormatToken.DATE_LONG)))
+                                SlackDateTime.create(ZonedDateTime.now(), DateTimeFormatToken.DATE_LONG)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_long_pretty")
                         .text(String.format("date_long_pretty: %s",
-                                SlackDateTime.create(LocalDateTime.now(), FormatToken.DATE_LONG_PRETTY)))
+                                SlackDateTime.create(LocalDateTime.now(), DateTimeFormatToken.DATE_LONG_PRETTY)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_num")
                         .text(String.format("date_num: %s",
-                                SlackDateTime.create(OffsetDateTime.now(), FormatToken.DATE_NUM)))
+                                SlackDateTime.create(OffsetDateTime.now(), DateTimeFormatToken.DATE_NUM)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_pretty")
                         .text(String.format("date_pretty: %s",
-                                SlackDateTime.create(Instant.now(), FormatToken.DATE_PRETTY)))
+                                SlackDateTime.create(Instant.now(), DateTimeFormatToken.DATE_PRETTY)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_short")
                         .text(String.format("date_short: %s",
-                                SlackDateTime.create(OffsetTime.now(), FormatToken.DATE_SHORT)))
+                                SlackDateTime.create(OffsetTime.now(), DateTimeFormatToken.DATE_SHORT)))
                         .build())
                 .addAttachments(Attachment.builder()
                         .fallback("Attachment with date_short_pretty")
                         .text(String.format("date_short_pretty: %s",
-                                SlackDateTime.create(ZonedDateTime.now(), FormatToken.DATE_SHORT_PRETTY)))
+                                SlackDateTime.create(ZonedDateTime.now(), DateTimeFormatToken.DATE_SHORT_PRETTY)))
                         .build())
                 .build();
 

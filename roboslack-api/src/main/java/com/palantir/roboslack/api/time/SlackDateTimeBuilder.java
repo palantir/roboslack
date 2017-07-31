@@ -52,7 +52,7 @@ public final class SlackDateTimeBuilder {
         return of(SlackDateTimeFormat.of(pattern));
     }
 
-    public static SlackDateTimeBuilder of(FormatToken token, FormatToken... tokens) {
+    public static SlackDateTimeBuilder of(DateTimeFormatToken token, DateTimeFormatToken... tokens) {
         return of(SlackDateTimeFormat.of(token, tokens));
     }
 

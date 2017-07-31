@@ -34,7 +34,7 @@ import javax.annotation.CheckForNull;
  * @since 1.0.0
  */
 @JsonSerialize(using = ToStringSerializer.class)
-public enum FormatToken {
+public enum DateTimeFormatToken {
     /**
      * {@code MMMM dd(th/st/nd/rd), yyyy} <br/>
      * (ie. {@code February 18th, 2014}).
@@ -88,18 +88,18 @@ public enum FormatToken {
 
     private final String pattern;
 
-    FormatToken(String pattern) {
+    DateTimeFormatToken(String pattern) {
         this.pattern = pattern;
     }
 
-    public static Optional<FormatToken> ofSafe(@CheckForNull String input) {
+    public static Optional<DateTimeFormatToken> ofSafe(@CheckForNull String input) {
         return Stream.of(values())
                 .filter(token -> token.toString().equalsIgnoreCase(input))
                 .findFirst();
     }
 
     @JsonCreator
-    public static FormatToken of(@CheckForNull String input) {
+    public static DateTimeFormatToken of(@CheckForNull String input) {
         return ofSafe(input).orElseThrow(() -> new IllegalArgumentException(String.format(NOT_FOUND_ERR, input)));
     }
 

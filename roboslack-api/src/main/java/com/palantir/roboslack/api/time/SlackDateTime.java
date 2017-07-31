@@ -45,11 +45,11 @@ public final class SlackDateTime {
         return builder(formatPattern).build(temporal);
     }
 
-    public static String create(long epochTimestamp, FormatToken token, FormatToken... tokens) {
+    public static String create(long epochTimestamp, DateTimeFormatToken token, DateTimeFormatToken... tokens) {
         return builder(token, tokens).build(epochTimestamp);
     }
 
-    public static String create(Temporal temporal, FormatToken token, FormatToken... tokens) {
+    public static String create(Temporal temporal, DateTimeFormatToken token, DateTimeFormatToken... tokens) {
         return builder(token, tokens).build(temporal);
     }
 
@@ -61,7 +61,7 @@ public final class SlackDateTime {
         return SlackDateTimeBuilder.of(SlackDateTimeFormat.of(formatPattern));
     }
 
-    public static SlackDateTimeBuilder builder(FormatToken token, FormatToken... tokens) {
+    public static SlackDateTimeBuilder builder(DateTimeFormatToken token, DateTimeFormatToken... tokens) {
         return SlackDateTimeBuilder.of(SlackDateTimeFormat.of(token, tokens));
     }
 
