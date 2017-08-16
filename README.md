@@ -8,7 +8,7 @@ RoboSlack is a Java 8 API which handles all aspects of authenticating and sendin
  service. RoboSlack features a fully-articulated Java API that allows consumers to easily create rich Slack messages 
  with features including:
 
-1. Text with Slack Markdown features (bold, italic, lists, quotes, emojis)
+1. Text with Slack Markdown features (bold, italic, lists, quotes, emojis, Slack dates)
 2. Links
 3. Attachments
 4. Pictures, Icons, Thumbnails
@@ -112,6 +112,42 @@ ResponseCode response = SlackWebHookService.with(token)
 
 RoboSlack handles error responses through the ``ResponseCode`` class. Check your ``ResponseCode`` to see why a message
 may have failed to send.
+
+#### Slack Date Formatting
+
+RoboSlack supports Slack's Date formatting in fields that allow Slack Markdown. 
+See [the "Formatting Dates" section in the Slack Docs for more information](https://api.slack.com/docs/message-formatting).
+
+```
+// Simple Date Formatting example
+MessageRequest message = MessageRequest.builder()
+                .username("roboslack")
+                .text(String.format("date_short_pretty: %s",
+                    SlackDateTime.create(ZonedDateTime.now(), DateTimeFormatToken.DATE_SHORT_PRETTY)))
+                .build();
+```
+
+Using the `SlackDateTime.create()` method, input a Java `Temporal` and a `DateTimeFormatToken` that represents how you'd
+like to see your Date rendered in your Slack message.
+
+Make sure that you specify a `Temporal` that contains all of the necessary Time/Date fields for proper rendering 
+according to this table:
+
+
+|Format Name        | Required Temporal Fields| Description                                                                           |
+|-------------------|-------------------------|---------------------------------------------------------------------------------------|
+| DATE              | MMMM, dd, yyyy          | Long month name, day with ordinal, and year                                           |
+| DATE_NUM          | mm, dd, yyyy            | All numbers, with leading zeroes                                                      |
+| DATE_SHORT        | MMM, dd, yyyy           | Short month name, day (no ordinal), and year                                          |
+| DATE_LONG         | eeee, MMMM, dd, yyyy    | Day of week, long month name, day with ordinal, and year                              |
+| DATE_PRETTY       | MMMM, dd, yyyy          | Like `DATE` but uses `yesterday`, `today`, `tomorrow` when appropriate                |
+| DATE_SHORT_PRETTY | MM, dd, yyyy            | Like `DATE_SHORT` but uses `yesterday`, `today`, `tomorrow` when appropriate          |
+| DATE_LONG_PRETTY  | eeee, MMMM, dd, yyyy    | Like `DATE_LONG` but uses `yesterday`, `today`, `tomorrow` when appropriate           |
+| TIME              | kk, mm                  | 12/24 hour : minute, AM/PM if client configured for 12-hour time                      |
+| TIME_SECS         | kk, mm, ss              | 12/24 hour : minute : second, AM/PM if client configured for 12-hour time             |
+
+Use any combination of these `DateTimeFormatTokens` to display the Date or Time as needed.
+
 
 Development
 -----------
