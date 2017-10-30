@@ -116,7 +116,12 @@ may have failed to send.
 #### Slack Date Formatting
 
 RoboSlack supports Slack's Date formatting in fields that allow Slack Markdown. 
-See [the "Formatting Dates" section in the Slack Docs for more information](https://api.slack.com/docs/message-formatting).
+See [the "Formatting Dates" section in the Slack Docs for more information](https://api.slack.com/docs/message-formatting). 
+The main advantage of the `SlackDateTime` format is that it renders appropriately based on where and when the client is viewing it: 
+for example, if the client views a `SlackDateTime` today, Slack will render it as `today`, but when they view it again 
+tomorrow, Slack will render the date as `yesterday` instead. Normal DateTimes don't have this dynamic advantage, and also
+don't respect clients' timezones as easily as the `SlackDateTime` will: if a client crosses a timezone and views a 
+`SlackDateTime` again, it will be rendered according to their new location's timezone.
 
 ```
 // Simple Date Formatting example
@@ -128,26 +133,30 @@ MessageRequest message = MessageRequest.builder()
 ```
 
 Using the `SlackDateTime.create()` method, input a Java `Temporal` and a `DateTimeFormatToken` that represents how you'd
-like to see your Date rendered in your Slack message.
+like to see your DateTime rendered in your Slack message.
 
 Make sure that you specify a `Temporal` that contains all of the necessary Time/Date fields for proper rendering 
 according to this table:
 
 
-|Format Name        | Required Temporal Fields| Description                                                                           |
-|-------------------|-------------------------|---------------------------------------------------------------------------------------|
-| DATE              | MMMM, dd, yyyy          | Long month name, day with ordinal, and year                                           |
-| DATE_NUM          | mm, dd, yyyy            | All numbers, with leading zeroes                                                      |
-| DATE_SHORT        | MMM, dd, yyyy           | Short month name, day (no ordinal), and year                                          |
-| DATE_LONG         | eeee, MMMM, dd, yyyy    | Day of week, long month name, day with ordinal, and year                              |
-| DATE_PRETTY       | MMMM, dd, yyyy          | Like `DATE` but uses `yesterday`, `today`, `tomorrow` when appropriate                |
-| DATE_SHORT_PRETTY | MM, dd, yyyy            | Like `DATE_SHORT` but uses `yesterday`, `today`, `tomorrow` when appropriate          |
-| DATE_LONG_PRETTY  | eeee, MMMM, dd, yyyy    | Like `DATE_LONG` but uses `yesterday`, `today`, `tomorrow` when appropriate           |
-| TIME              | kk, mm                  | 12/24 hour : minute, AM/PM if client configured for 12-hour time                      |
-| TIME_SECS         | kk, mm, ss              | 12/24 hour : minute : second, AM/PM if client configured for 12-hour time             |
+|`DateTimeFormatToken` Name        | Required Temporal Fields | Description                                                                           | Example `Temporal` types to use                                                         |
+|----------------------------------|--------------------------|---------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| DATE                             | MMMM, dd, yyyy           | Long month name, day with ordinal, and year                                           | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_NUM                         | mm, dd, yyyy             | All numbers, with leading zeroes                                                      | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_SHORT                       | MMM, dd, yyyy            | Short month name, day (no ordinal), and year                                          | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_LONG                        | eeee, MMMM, dd, yyyy     | Day of week, long month name, day with ordinal, and year                              | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_PRETTY                      | MMMM, dd, yyyy           | Like `DATE` but uses `yesterday`, `today`, `tomorrow` when appropriate                | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_SHORT_PRETTY                | MM, dd, yyyy             | Like `DATE_SHORT` but uses `yesterday`, `today`, `tomorrow` when appropriate          | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| DATE_LONG_PRETTY                 | eeee, MMMM, dd, yyyy     | Like `DATE_LONG` but uses `yesterday`, `today`, `tomorrow` when appropriate           | `Instant`, `LocalDateTime`, `LocalDate`, `OffsetDateTime`, `OffsetDate`, `ZonedDateTime`|
+| TIME                             | kk, mm                   | 12/24 hour : minute, AM/PM if client configured for 12-hour time                      | `Instant`, `LocalDateTime`, `OffsetDateTime`, `ZonedDateTime`                           |
+| TIME_SECS                        | kk, mm, ss               | 12/24 hour : minute : second, AM/PM if client configured for 12-hour time             | `Instant`, `LocalDateTime`, `OffsetDateTime`, `ZonedDateTime`                           |
 
+For more information, see the [Java DateTime API Pages].
 Use any combination of these `DateTimeFormatTokens` to display the Date or Time as needed.
 
+If you supply a `Temporal` that doesn't support all of the required `TemporalFields` for your `DateTimeFormatToken`, or that isn't
+convertible to an Epoch Timestamp as Slack requires, RoboSlack will throw an `IllegalArgumentException` and won't proceed
+with parsing your message.
 
 Development
 -----------
@@ -161,3 +170,4 @@ This project is made available under the
 
 [Incoming Webhooks]: https://api.slack.com/incoming-webhooks
 [Incoming Webhook]: https://my.slack.com/services/new/incoming-webhook/
+[Java DateTime API Pages]: http://www.oracle.com/technetwork/articles/java/jf14-date-time-2125367.html
