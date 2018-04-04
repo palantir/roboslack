@@ -75,7 +75,7 @@ class EpochTimestampConverterTests {
     private static class ConversionFixturesProvider implements ArgumentsProvider {
 
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return CONVERSION_FIXTURES.entrySet().stream().map(Arguments::of);
         }
 
