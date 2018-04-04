@@ -64,14 +64,13 @@ public final class MorePreconditions {
     /**
      * Ensures that at least one field in {code fieldNames} is non-null/empty -- e.g., it is valid.
      *
-     * @param fieldNames {@code Collection<String>} field names to check
-     * @param optionals {@code }
+     * @param fieldNames {@link Collection} field names to check
+     * @param optionals the {@link Collection} of {@link Optional}s containing {@link String}s to validate
      */
     public static void checkAtLeastOnePresentAndValid(Collection<String> fieldNames,
             Collection<Optional<String>> optionals) {
-        checkArgument(optionals.stream()
-                        .anyMatch(optional -> optional.isPresent()
-                                && !Strings.isNullOrEmpty(optional.get())),
+        checkArgument(optionals.stream().anyMatch(optional -> optional.isPresent()
+                        && !Strings.isNullOrEmpty(optional.get())),
                 ONE_PRESENT_AND_VALID_FORMAT,
                 Joiner.on(", ").join(fieldNames));
     }
@@ -97,7 +96,7 @@ public final class MorePreconditions {
      * @return true if contains accepted count of {@link DateTimeFormatToken}, false otherwise
      */
     public static boolean containsDateTimeFormatTokens(@CheckForNull String text, Range<Integer> acceptanceRange) {
-        return acceptanceRange.contains(Stream.of(DateTimeFormatToken.values())
+        return text != null && acceptanceRange.contains(Stream.of(DateTimeFormatToken.values())
                 .mapToInt(token -> text.contains(token.toString()) ? 1 : 0)
                 .sum());
     }

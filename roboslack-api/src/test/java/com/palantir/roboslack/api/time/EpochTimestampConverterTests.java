@@ -69,7 +69,7 @@ class EpochTimestampConverterTests {
     @ParameterizedTest
     @ArgumentsSource(ConversionFixturesProvider.class)
     void testReflectiveConvert(Map.Entry<Temporal, Long> fixture) {
-        assertEquals(EpochTimestampConverter.convert(fixture.getKey()), fixture.getValue().longValue());
+        assertEquals(EpochTimestamps.convert(fixture.getKey()), fixture.getValue().longValue());
     }
 
     private static class ConversionFixturesProvider implements ArgumentsProvider {

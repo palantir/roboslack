@@ -73,14 +73,14 @@ public enum DateTimeFormatToken {
      * If client is set to show 24hr format: {@code kk:mm} <br/>
      * (ie. {@code 06:39} or {@code 18:39}) <br/>
      */
-    TIME("kk:mm"), // Default to 24hr format
+    TIME("kk:mm"), // Default to 24hr format for formatting within the java runtime
     /**
      * If client is set to show 12hr format: {@code hh:mm:ss a} <br/>
      * (ie. {@code 6:39:45 AM} or {@code 6:39:42 PM}) <br/>
      * If client is set to show 24hr format: {@code kk:mm:ss} <br/>
      * (ie. {@code 06:39:45} or {@code 18:39:42}) <br/>
      */
-    TIME_SECS("kk:mm:ss"); // Default to 24hr format
+    TIME_SECS("kk:mm:ss"); // Default to 24hr format for formatting within the java runtime
 
     private static final ValueDecorator<String> TOKEN_DECORATOR = StringDecorator.of("{", "}");
 
@@ -108,6 +108,11 @@ public enum DateTimeFormatToken {
         return TOKEN_DECORATOR.decorate(name().toLowerCase());
     }
 
+    /**
+     * Gets the associated {@link java.time.format.DateTimeFormatter} based {@link String} pattern.
+     *
+     * @return the {@link java.time.format.DateTimeFormatter} based pattern
+     */
     public String pattern() {
         return pattern;
     }

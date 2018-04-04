@@ -22,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.base.Strings;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class SlackDateTimeFormatTests {
+class SlackDateTimeFormatterTests {
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -36,24 +37,35 @@ class SlackDateTimeFormatTests {
             "{date",
             "time}"})
     void testInvalidConstruction(String pattern) {
-        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> SlackDateTimeFormat.of(pattern));
+        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> SlackDateTimeFormatter.of(pattern));
         assertThat(thrown.getMessage(), containsString("at least one FormatToken"));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
+            "{date}",
             "Processed on: {date}",
             "{time} on {date_long_pretty}",
             "{time_secs}",
             "{date_long}T{time_secs}"})
     void testValidConstruction(String pattern) {
-        SlackDateTimeFormat format = SlackDateTimeFormat.of(pattern);
-        assertValid(format);
+        SlackDateTimeFormatter formatter = SlackDateTimeFormatter.of(pattern);
+        assertValid(formatter);
     }
 
-    void assertValid(SlackDateTimeFormat format) {
-        assertFalse(Strings.isNullOrEmpty(format.toString()));
-        assertFalse(Strings.isNullOrEmpty(format.formatter().toString()));
+    @Test
+    void testValidConstructionForTokens() {
+        SlackDateTimeFormatter dateFormatter = SlackDateTimeFormatter.of(DateTimeFormatToken.DATE);
+        assertValid(dateFormatter);
+
+        SlackDateTimeFormatter dateAndTimeFormatter = SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_LONG_PRETTY,
+                DateTimeFormatToken.TIME_SECS);
+        assertValid(dateAndTimeFormatter);
+    }
+
+    private void assertValid(SlackDateTimeFormatter formatter) {
+        assertFalse(Strings.isNullOrEmpty(formatter.toString()));
+        assertFalse(Strings.isNullOrEmpty(formatter.pattern()));
     }
 
 }

@@ -1,0 +1,29 @@
+{
+  "fields": [
+    {
+      "title": "Field1Title",
+      "value": "Field1Text",
+      "short": true
+    },
+    {
+      "title": "Field2Title",
+      "value": "Field2Text",
+      "short": true
+    }
+  ],
+  "fallback": "Fallback...",
+  "color": "#c3c6c4",
+  "pretext": "pretext",
+  "author_name": "Author",
+  "author_link": "https://platform.slack-edge.com/img/default_application_icon.png",
+  "author_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+  "title": "A title",
+  "title_link": "http://www.palantir.com",
+  "text": null,
+  "image_url": "https://www.palantir.com/videos/gotham_workflow.jpg",
+  "thumb_url": "https://www.palantir.com/build/images/about/phil-eng-hero.jpg",
+  "footer": "Footer",
+  "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
+  "ts": 1497012014,
+  "mrkdwn_in": []
+}

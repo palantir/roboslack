@@ -17,7 +17,6 @@
 package com.palantir.roboslack.api.time;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,49 +37,62 @@ import java.time.temporal.Temporal;
  * @see Temporal
  * @since 1.0.0
  */
-public final class EpochTimestampConverter {
+final class EpochTimestamps {
 
     private static final ZoneOffset UTC_OFFSET = ZoneOffset.UTC;
     private static final ZoneId UTC_ID = ZoneId.of("UTC");
 
     private static final String CONVERT_ERR = "Unable to convert object of type '%s' to epoch timestamp";
 
-    private EpochTimestampConverter() {}
+    private EpochTimestamps() {}
 
-    public static long convertInstant(Instant instant) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertInstant(Instant instant) {
         return instant.getEpochSecond();
     }
 
-    public static long convertLocalTime(LocalTime localTime) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertLocalTime(LocalTime localTime) {
         return convertLocalDateTime(localTime.atDate(LocalDate.now(UTC_ID)));
     }
 
-    public static long convertLocalDate(LocalDate localDate) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertLocalDate(LocalDate localDate) {
         return convertLocalDateTime(localDate.atStartOfDay());
     }
 
-    public static long convertLocalDateTime(LocalDateTime localDateTime) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertLocalDateTime(LocalDateTime localDateTime) {
         return localDateTime.toEpochSecond(UTC_OFFSET);
     }
 
-    public static long convertZonedDateTime(ZonedDateTime zonedDateTime) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertZonedDateTime(ZonedDateTime zonedDateTime) {
         return convertInstant(zonedDateTime.toInstant());
     }
 
-    public static long convertOffsetDateTime(OffsetDateTime offsetDateTime) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertOffsetDateTime(OffsetDateTime offsetDateTime) {
         return convertZonedDateTime(offsetDateTime.atZoneSameInstant(UTC_OFFSET));
     }
 
-    public static long convertOffsetTime(OffsetTime offsetTime) {
+    @SuppressWarnings("unused") // Called via reflection
+    private static long convertOffsetTime(OffsetTime offsetTime) {
         return convertOffsetDateTime(offsetTime.atDate(LocalDate.now(UTC_ID)));
     }
 
-    public static long convert(Temporal object) {
-        String className = object.getClass().getSimpleName();
-        String methodName = "convert" + className;
+    /**
+     * Converts a {@link Temporal} into it's {@link Long} epoch timestamp equivalent (in seconds) based in UTC.
+     *
+     * @param temporal the {@link Temporal} to convert
+     * @return the {@link Long} epoch timestamp (in seconds) based in UTC
+     */
+    static long convert(Temporal temporal) {
+        String className = temporal.getClass().getSimpleName();
+        String methodName = String.format("convert%s", className);
         try {
-            Method visitMethod = EpochTimestampConverter.class.getMethod(methodName, object.getClass());
-            return (long) visitMethod.invoke(null, object); // Use null for instance of class (for static methods)
+            return (long) EpochTimestamps.class.getDeclaredMethod(methodName, temporal.getClass())
+                    .invoke(null, temporal); // Use null for instance of class (for static methods)
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalArgumentException(String.format(CONVERT_ERR, className), e);
         }

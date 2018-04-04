@@ -61,7 +61,7 @@ public final class ResourcesReader {
         }
     }
 
-    public static Stream<JsonNode> readJson(String resourcesDirectory) throws Exception {
+    public static Stream<JsonNode> readJson(String resourcesDirectory) {
         return listFiles(resourcesDirectory).map(ResourcesReader::readJson);
     }
 
