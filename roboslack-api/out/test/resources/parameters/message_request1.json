@@ -1,0 +1,13 @@
+{
+  "link_names": true,
+  "unfurl_media": true,
+  "unfurl_links": true,
+  "mrkdwn": true,
+  "parse": "full",
+  "attachments": [],
+  "text": "The simplest message",
+  "icon_emoji": ":smile:",
+  "icon_url": null,
+  "username": "robo-slack",
+  "channel": null
+}

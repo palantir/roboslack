@@ -20,10 +20,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Range;
 import com.palantir.roboslack.api.markdown.SlackMarkdown;
+import com.palantir.roboslack.api.time.DateTimeFormatToken;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import javax.annotation.CheckForNull;
 
 /**
@@ -56,28 +59,42 @@ public final class MorePreconditions {
 
     /**
      * Ensures that at least one field in {code fieldNames} is non-null/empty -- e.g., it is valid.
-     * @param fieldNames {@code Collection<String>} field names to check
-     * @param optionals {@code }
+     *
+     * @param fieldNames {@link Collection} field names to check
+     * @param optionals the {@link Collection} of {@link Optional}s containing {@link String}s to validate
      */
     public static void checkAtLeastOnePresentAndValid(Collection<String> fieldNames,
             Collection<Optional<String>> optionals) {
-        checkArgument(optionals.stream()
-                        .anyMatch(optional -> optional.isPresent()
-                                && !Strings.isNullOrEmpty(optional.get())),
+        checkArgument(optionals.stream().anyMatch(optional -> optional.isPresent()
+                        && !Strings.isNullOrEmpty(optional.get())),
                 ONE_PRESENT_AND_VALID_FORMAT,
                 Joiner.on(", ").join(fieldNames));
     }
 
     /**
-     * Returns true if the parameter {@link String} contains any symbols that Slack would process as markdown.
-     * Bold, italic, strikethrough, and emojis are tested for in pairs - e.g. one asterisk will not return true, but
-     * a pair will.
+     * Returns true if the parameter {@link String} contains any symbols that Slack would process as markdown. Bold,
+     * italic, strikethrough, and emojis are tested for in pairs - e.g. one asterisk will not return true, but a pair
+     * will.
      *
      * @param text {@link String} for Slack markdown
      * @return {@link boolean} telling us if Slack markdown was found
      */
     public static boolean containsMarkdown(@CheckForNull String text) {
         return text != null && SlackMarkdown.PATTERN.matcher(text).find();
+    }
+
+    /**
+     * Returns true if the {@code text} contains a summed count of instances of {@link DateTimeFormatToken} values,
+     * based on the sum count {@link Range} {@code acceptanceRange}.
+     *
+     * @param text the text to count {@link DateTimeFormatToken} instances on
+     * @param acceptanceRange the range threshold
+     * @return true if contains accepted count of {@link DateTimeFormatToken}, false otherwise
+     */
+    public static boolean containsDateTimeFormatTokens(@CheckForNull String text, Range<Integer> acceptanceRange) {
+        return text != null && acceptanceRange.contains(Stream.of(DateTimeFormatToken.values())
+                .mapToInt(token -> text.contains(token.toString()) ? 1 : 0)
+                .sum());
     }
 
 }

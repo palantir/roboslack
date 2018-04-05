@@ -33,12 +33,20 @@ import com.palantir.roboslack.api.attachments.components.Field;
 import com.palantir.roboslack.api.attachments.components.Footer;
 import com.palantir.roboslack.api.attachments.components.Title;
 import com.palantir.roboslack.api.markdown.SlackMarkdown;
+import com.palantir.roboslack.api.time.DateTimeFormatToken;
+import com.palantir.roboslack.api.time.SlackDateTime;
+import com.palantir.roboslack.api.time.SlackDateTimeFormatter;
 import com.palantir.roboslack.webhook.api.model.WebHookToken;
 import com.palantir.roboslack.webhook.api.model.response.ResponseCode;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -251,6 +259,66 @@ class SlackWebHookServiceTests {
                         .build())
                 .build();
 
+        private static final MessageRequest MESSAGE_WITH_DATE_TIMES = MessageRequest.builder()
+                .username("robo-slack")
+                .iconEmoji("train")
+                .text("Message containing native Slack date time types:")
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with time_secs")
+                        .text(String.format("time_secs: %s",
+                                SlackDateTime.of(LocalTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.TIME_SECS))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with time")
+                        .text(String.format("time: %s",
+                                SlackDateTime.of(OffsetTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.TIME))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date")
+                        .text(String.format("date: %s",
+                                SlackDateTime.of(LocalTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_long")
+                        .text(String.format("date_long: %s",
+                                SlackDateTime.of(ZonedDateTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_LONG))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_long_pretty")
+                        .text(String.format("date_long_pretty: %s",
+                                SlackDateTime.of(LocalDateTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_LONG_PRETTY))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_num")
+                        .text(String.format("date_num: %s",
+                                SlackDateTime.of(OffsetDateTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_NUM))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_pretty")
+                        .text(String.format("date_pretty: %s",
+                                SlackDateTime.of(Instant.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_PRETTY))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_short")
+                        .text(String.format("date_short: %s",
+                                SlackDateTime.of(OffsetTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_SHORT))))
+                        .build())
+                .addAttachments(Attachment.builder()
+                        .fallback("Attachment with date_short_pretty")
+                        .text(String.format("date_short_pretty: %s",
+                                SlackDateTime.of(ZonedDateTime.now())
+                                        .format(SlackDateTimeFormatter.of(DateTimeFormatToken.DATE_SHORT_PRETTY))))
+                        .build())
+                .build();
+
         private static URL url(String url) {
             try {
                 return new URL(url);
@@ -269,7 +337,8 @@ class SlackWebHookServiceTests {
                     MESSAGE_MARKDOWN_IN_ATTACHMENT_FIELDS,
                     MESSAGE_WITH_ATTACHMENT_FOOTER,
                     MESSAGE_WITH_ATTACHMENTS,
-                    MESSAGE_COMPLEX
+                    MESSAGE_COMPLEX,
+                    MESSAGE_WITH_DATE_TIMES
             ).map(Arguments::of);
         }
     }
