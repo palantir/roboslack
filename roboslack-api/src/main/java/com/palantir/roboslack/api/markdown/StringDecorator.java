@@ -38,7 +38,7 @@ import org.immutables.value.Value;
 @JsonSerialize(as = ImmutableStringDecorator.class)
 public abstract class StringDecorator implements ValueDecorator<String> {
 
-    static StringDecorator of(String prefix, String suffix) {
+    public static StringDecorator of(String prefix, String suffix) {
         return builder().prefix(prefix).suffix(suffix).build();
     }
 
