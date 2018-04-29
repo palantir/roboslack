@@ -34,7 +34,7 @@ Artifacts are published to Bintray, the following is an example gradle dependenc
 
 ```
 repositories {
-  maven { url  "http://palantir.bintray.com/releases" }
+    maven { url  "http://palantir.bintray.com/releases" }
 }
 
 dependencies {
