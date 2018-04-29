@@ -30,11 +30,11 @@ Auxiliary libraries:
 Setup
 -----
 
-Artifacts are published to JCenter, the following is an example gradle dependency configuration:
+Artifacts are published to Bintray, the following is an example gradle dependency configuration:
 
 ```
 repositories {
-  jcenter()
+  maven { url  "http://palantir.bintray.com/releases" }
 }
 
 dependencies {
