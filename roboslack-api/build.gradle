@@ -17,7 +17,7 @@
 apply from: "${rootDir}/gradle/java.gradle"
 apply from: "${rootDir}/gradle/junit.gradle"
 apply from: "${rootDir}/gradle/immutables.gradle"
-apply from: "${rootDir}/gradle/publish.gradle"
+apply plugin: 'com.palantir.external-publish-jar'
 
 dependencies {
     compile project(":extras:jackson-support")
